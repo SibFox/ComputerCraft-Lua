@@ -1,6 +1,6 @@
 -- Code by SibFox
 
-local githuburl = "https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Programs"
+local githuburl = "https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Programs.txt"
 
 local programs = {}
 
@@ -40,16 +40,13 @@ function install(program)
         exit("Program is already installed. Either use the 'delete' or 'update' command", true)
     end
 
-    local rmStartup = false
     if fs.exists("startup") then
         fs.delete("startup")
     end
 
-    if rmStartup then
-        local sfile = fs.open("startup", "w")
-        sfile.write(startup)
-        sfile.close()        
-    end
+    local sfile = fs.open("startup", "w")
+    sfile.write(startup)
+    sfile.close()
     
     libraries = {}
     

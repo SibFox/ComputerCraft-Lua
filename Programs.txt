@@ -17,12 +17,12 @@
 
     user_protected_door = {
         name = "User Protected Door",
-        desc = "udp",
-        path = "user_protected_door",
+        desc = "upd",
+        path = "upd",
         version = "0.1.0",
         startup = "shell.run('upd/upd.lua')",
         files = {
-            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Create%20terminal/main_terminal.lua", name = "user_protected_door.lua", type = "program"},
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Create%20terminal/main_terminal.lua", name = "upd.lua", type = "program"},
             {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/terminal_additions.lua", name = "terminal_additions.lua", type = "api"},
         },
         needs = {
