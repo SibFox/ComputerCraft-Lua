@@ -1,15 +1,8 @@
+local term_add = require("terminal_additions")
+
 local args = { ... }
 
 local allowedUsers = { ... }
-
-local function exit(message, isError)
-    term.setTextColor(isError and colors.red or colors.yellow)
-    print(message)
-    term.setTextColor(colors.white)
-    if isError then
-        error()
-    end
-end
 
 local function defineUsersSetting()
     if type(settings.get("nzi_upd_users")) == "nil" then

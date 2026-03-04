@@ -1,0 +1,32 @@
+{
+    minigoma_main_terminal = {
+        name = "Minigoma Main Terminal",
+        desc = "mmt",
+        path = "main_terminal",
+        version = "0.1.0",
+        startup = "shell.run('main_terminal/main_terminal.lua')",
+        files = {
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Create%20terminal/main_terminal.lua", name = "main_terminal.lua", type = "program"},
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/switch_lib.lua", name = "switch_lib.lua", type = "api"},
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/terminal_additions.lua", name = "terminal_additions.lua", type = "api"},
+        },
+        needs = {
+            modem = true
+        }
+    },
+
+    user_protected_door = {
+        name = "User Protected Door",
+        desc = "udp",
+        path = "user_protected_door",
+        version = "0.1.0",
+        startup = "shell.run('upd/upd.lua')",
+        files = {
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Create%20terminal/main_terminal.lua", name = "user_protected_door.lua", type = "program"},
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/terminal_additions.lua", name = "terminal_additions.lua", type = "api"},
+        },
+        needs = {
+            
+        }
+    }
+}

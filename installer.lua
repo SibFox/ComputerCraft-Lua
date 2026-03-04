@@ -1,6 +1,6 @@
 -- Code by SibFox
 
-local githuburl = ""--"https://raw.githubusercontent.com/SirEndii/Lua-Projects/refs/heads/master/src/Programs.txt"
+local githuburl = "https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Programs"
 
 local programs = {}
 
@@ -57,7 +57,7 @@ function install(program)
     programPath = ""
     for _, v in ipairs(programs[program]["files"]) do
         if v.type == "program" then
-           programPath = v.link 
+           programPath = v.link
            programName = v.name
         elseif v.type == "api" then
             table.insert(libraries, v)
