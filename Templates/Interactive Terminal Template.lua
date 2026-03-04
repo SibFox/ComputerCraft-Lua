@@ -62,7 +62,7 @@ while true do
 
     if bUpdateMonitor then
         siblib.clearTerm()
-        print("---- Interactive Terminal ----")
+        print("---- [Interactive Terminal] ----")
         term.setTextColor(colors.lightGray)
         print("<< Arrows to select")
         print("<< Enter to confirm")
@@ -75,6 +75,7 @@ while true do
             end
             print(tOptions[i].name)
         end
+        print("---- [====================] ----")
         bUpdateMonitor = false
     end
 

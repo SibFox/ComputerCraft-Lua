@@ -14,6 +14,7 @@ local function clearTerm(posX, posY)
     term.setCursorPos(posX, posY)
 end
 
+---@param text string
 local function writeCenter(text)
   local x, y = term.getCursorPos()
   local width, height = term.getSize()
@@ -21,15 +22,19 @@ local function writeCenter(text)
   term.write(text)
 end
 
+---@param message? string
+---@param isError? boolean
 local function exit(message, isError)
     term.setTextColor(isError and colors.red or colors.yellow)
-    print(message)
+    print("> "..message)
     term.setTextColor(colors.white)
     if isError then
         error()
     end
 end
 
+---@param tab table
+---@param val any
 local function contains(tab, val)
     for i, v in ipairs(tab) do
         if v == val then

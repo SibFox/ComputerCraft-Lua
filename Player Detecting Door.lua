@@ -194,10 +194,10 @@ function expectArgs()
         removeUser(args[2])
     elseif #args >= 1 and args[1] == "run" then
         doorCheck()
-    elseif #args >= 1 and args[1] == "help" then
-        showHelp()
     elseif #args >= 1 and args[1] == "users" then
         users()
+    elseif #args >= 1 and args[1] == "help" then
+        showHelp()
     elseif #args >= 1 then
         showHelp()
     end

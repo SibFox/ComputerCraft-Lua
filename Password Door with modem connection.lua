@@ -35,7 +35,7 @@ while true do
     local answer = false
     repeat
         siblib.clearTerm()
-        local hostID = hostID == nil and rednet.lookup(connectionProtocol.."_"..specification, connectionHost) or hostID
+        hostID = hostID == nil and rednet.lookup(connectionProtocol.."_"..specification, connectionHost) or hostID
         if hostID == nil then
             printError("> Unnable to find crypt host! Termination password is the only available.")
         end
@@ -44,14 +44,18 @@ while true do
         if hostID ~= nil then
             rednet.send(hostID, enteredPass, connectionProtocol.."_"..specification)
             local connections = 0
+            local _, y = term.getCursorPos()
             while connections < 5 do
                 _, answer = rednet.receive(connectionProtocol.."_"..specification, 3)
                 if answer then
                     break
                 end
                 connections = connections + 1
+                term.setCursorPos(1, y+1)
                 print("> Attempt to connect "..connections.."...")
             end
+            hostID = nil
+            siblib.exit("Connection have not been established")
         else
             if enteredPass == termiantionPass then
                 siblib.exit()
