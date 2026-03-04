@@ -31,13 +31,14 @@ end
 
 
 
----- Build options section
+------ Build options section
 
 ---@param name string
 ---@param func function
 ---@param layer? number
 local function addOption(name, func, layer)
     layer = layer or 1
+    tOptions[layer] = tOptions[layer] or {}
     tOptions[layer][#tOptions[layer]+1] = { name = name, func = func }
 end
 
@@ -52,6 +53,10 @@ addOption("Elevator contorls", function ()
     iLayerDepth = 3
     print("Elevator controls selected")
     sleep(1)
+end, 1)
+
+addOption("Exit", function ()
+    return true
 end, 1)
 
 -- Room modules
@@ -132,3 +137,5 @@ while true do
     end
 
 end
+
+siblib.printTable(tOptions)
