@@ -1,10 +1,11 @@
 -- Code by SibFox
--- main_window.lua
 
-local siblib = require("siblib")
-local switch = siblib.switch
-local case = siblib.case
-local default = siblib.default
+local switch_lib = require("switch_lib")
+local term_add = require("terminal_additions")
+
+local switch = switch_lib.switch
+local case = switch_lib.case
+local default = switch_lib.default
 
 local tOptions = {}
 local iSelectedOption = 1
@@ -26,12 +27,12 @@ local function selectionDown()
 end
 
 local function makeSelection()
-    return tOptions[iSelectedOption].func()
+    return tOptions[iLayerDepth][iSelectedOption].func()
 end
 
 
 
------- Build options section
+----- Build options section
 
 ---@param name string
 ---@param func function
@@ -91,7 +92,7 @@ end, 3)
 ---@param layer? number
 local function drawMenu(title, layer)
     layer = layer or 1
-    siblib.writeCenter("---- ["..title.."] ----")
+    print("---- ["..title.."] ----")
     term.setTextColor(colors.white)
     for i=1, #tOptions[layer] do
         if iSelectedOption == i then
@@ -101,13 +102,13 @@ local function drawMenu(title, layer)
         end
         print(tOptions[layer][i].name)
     end
-    siblib.writeCenter("---- ["..string.rep("=", #title).."] ----")
+    print("---- ["..string.rep("=", #title).."] ----")
 end
 
 while true do
 
     if bUpdateMonitor then
-        siblib.clearTerm()
+        term_add.clearTerm()
         local termName = switch(iLayerDepth,
             case(2, function() return "Room modules control" end),
             case(3, function() return "Elevator controls" end),
@@ -129,7 +130,7 @@ while true do
         end
         if input == 257 then -- Enter
             if makeSelection() then
-                siblib.clearTerm()
+                term_add.clearTerm()
                 break
             end
             bUpdateMonitor = true
@@ -137,5 +138,3 @@ while true do
     end
 
 end
-
-siblib.printTable(tOptions)

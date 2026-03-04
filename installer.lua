@@ -42,13 +42,7 @@ function install(program)
 
     local rmStartup = false
     if fs.exists("startup") then
-        print("Delete startup file?")
-        if io.write == "y" or "Y" then
-            rmStartup = true
-            fs.delete("startup")
-        else
-            exit("Dropping program installation", true)
-        end
+        fs.delete("startup")
     end
 
     if rmStartup then
@@ -105,13 +99,7 @@ function delete(program)
     end
 
     if fs.exists("startup") then
-        print("Delete startup file?")
-        if io.write == "y" or "Y" then
-            rmStartup = true
-            fs.delete("startup")
-        else
-            exit("Dropping program deletion", true)
-        end
+        fs.delete("startup")
     end
 
     libraries = {}
@@ -120,7 +108,7 @@ function delete(program)
     programPath = ""
     for k, v in ipairs(programs[program]["files"]) do
         if v.type == "program" then
-           programPath = v.link 
+           programPath = v.link
            programName = v.name
         elseif v.type == "api" then
             print(v)
@@ -143,3 +131,53 @@ function delete(program)
     term.setTextColor(colors.lime)
     print("Successfully uninstalled ".. program)
 end
+
+function showHelp()
+    term.setTextColor(colors.lightGray)
+    print("---- [Installer] ----")
+    term.setTextColor(colors.white)
+    print("installer help              - Shows this menu")
+    print("installer list              - Lists all available programs")
+    print("installer install <program> - Installs a program")
+    print("installer update <program>  - Updates a program")
+    print("installer delete <program>  - Deletes a program")
+    print("installer config <program>  - Configures a program after it is installed")
+    term.setTextColor(colors.lightGray)
+    print("---- [=========] ----")
+    term.setTextColor(colors.white)
+end
+
+function showList()
+    for name, table in pairs(programs) do
+        term.setTextColor(colors.green)
+        write(name)
+        term.setTextColor(colors.lightGray)
+        write(" -- ")
+        term.setTextColor(colors.cyan)
+        write(table.desc .. "\n")
+    end
+end
+
+function executeInput()
+    if #args <= 0 then
+        showHelp()
+    end
+    if #args >= 1 and args[1] == "help" then
+        showHelp()
+    elseif #args >= 1 and args[1] == "list" then
+        showList()
+    elseif #args >= 1 and args[1] == "install" then
+        install(args[2])
+    elseif #args >= 1 and args[1] == "update" then
+        update(args[2])
+    elseif #args >= 1 and args[1] == "delete" then
+        delete(args[2])
+    elseif #args >= 1 and args[1] == "config" then
+        exit("Not implemented", false)
+    elseif #args >= 1 then
+        exit("Could not find command '" .. args[1] .. "' or you are missing arguments", false)
+    end
+end
+
+loadSources()
+executeInput()
