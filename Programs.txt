@@ -4,7 +4,7 @@
         desc = "mmt",
         path = "main_terminal",
         version = "0.1.0",
-        startup = "shell.run('main_terminal/main_terminal.lua')",
+        startup = "shell.run('minigoma_main_terminal/main_terminal.lua')",
         files = {
             {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Create%20terminal/main_terminal.lua", name = "main_terminal.lua", type = "program"},
             {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/switch_lib.lua", name = "switch_lib.lua", type = "api"},
@@ -20,9 +20,9 @@
         desc = "upd",
         path = "upd",
         version = "0.1.0",
-        startup = "shell.run('upd/upd.lua')",
+        startup = "shell.run('user_protected_door/upd.lua')",
         files = {
-            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Create%20terminal/main_terminal.lua", name = "upd.lua", type = "program"},
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Locks/Player%20Detecting%20Door.lua", name = "upd.lua", type = "program"},
             {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/terminal_additions.lua", name = "terminal_additions.lua", type = "api"},
         },
         needs = {
