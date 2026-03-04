@@ -21,7 +21,7 @@ defineVersion()
 
 siblib.clearTerm()
 
-local m = peripheral.find("modem") or error("> No modem attached!", 0) -- Не робит
+local m = peripheral.find("modem") or error("> No modem attached!", 0)
 local rl = peripheral.find("redstone_relay") or error("> No redstone relay attached!", 0)
 
 rednet.open("modem_0")
@@ -51,11 +51,13 @@ while true do
                     break
                 end
                 connections = connections + 1
-                term.setCursorPos(1, y+1)
+                term.setCursorPos(1, y)
                 print("> Attempt to connect "..connections.."...")
             end
-            hostID = nil
-            siblib.exit("Connection have not been established")
+            if connections >= 5 then
+                hostID = nil
+                siblib.exit("Connection have not been established")
+            end
         else
             if enteredPass == termiantionPass then
                 siblib.exit()

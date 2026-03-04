@@ -2,9 +2,13 @@
 -- main_window.lua
 
 local siblib = require("siblib")
+local switch = siblib.switch
+local case = siblib.case
+local default = siblib.default
 
 local tOptions = {}
 local iSelectedOption = 1
+local iLayerDepth = 1
 local bUpdateMonitor = true
 
 local function selectionUp()
@@ -27,58 +31,84 @@ end
 
 
 
--- Build options section
+---- Build options section
 
 ---@param name string
 ---@param func function
----@param level? number
-local function addOption(name, func, level)
-    level = level or 1
-    tOptions[#tOptions+1] = { name = name, func = func }
+---@param layer? number
+local function addOption(name, func, layer)
+    layer = layer or 1
+    tOptions[layer][#tOptions[layer]+1] = { name = name, func = func }
 end
 
+-- Main terminal
 addOption("Room modules control", function ()
-    os.run({}, "rom/nez_inc/control_terminal/room_modules_window.lua")
-    print("Option 1 selected")
+    iLayerDepth = 2
+    print("Room modules selected")
     sleep(1)
-    return false
-end)
+end, 1)
 
 addOption("Elevator contorls", function ()
-    -- os.run({}, "rom/nez_inc/control_terminal/elevator_window.lua")
+    iLayerDepth = 3
     print("Elevator controls selected")
     sleep(1)
-    return false
-end)
+end, 1)
 
-addOption("Exit", function ()
-    print("Exit option selected")
+-- Room modules
+addOption("Overall room", function ()
+    iLayerDepth = 21
+    print("Overall room selected")
     sleep(1)
-    return true
-end)
+end, 2)
 
+addOption("Crushing room", function ()
+    iLayerDepth = 1--22
+    print("Crushing room selected")
+    sleep(1)
+end, 2)
+
+addOption("Experience room", function ()
+    iLayerDepth = 23
+    print("Experience room selected")
+    sleep(1)
+end, 3)
+
+addOption("Back", function ()
+    iLayerDepth = 1
+    print("Back selected")
+    sleep(1)
+end, 3)
 
 
 -- Terminal section
+
+---@param title string
+---@param layer? number
+local function drawMenu(title, layer)
+    layer = layer or 1
+    siblib.writeCenter("---- ["..title.."] ----")
+    term.setTextColor(colors.white)
+    for i=1, #tOptions[layer] do
+        if iSelectedOption == i then
+            write(">>\t")
+        else
+            write("  \t")
+        end
+        print(tOptions[layer][i].name)
+    end
+    siblib.writeCenter("---- ["..string.rep("=", #title).."] ----")
+end
 
 while true do
 
     if bUpdateMonitor then
         siblib.clearTerm()
-        siblib.writeCenter("---- [Control Terminal] ----")
-        term.setTextColor(colors.lightGray)
-        print("<< Arrows to select")
-        print("<< Enter to confirm")
-        term.setTextColor(colors.white)
-        for i=1, #tOptions do
-            if iSelectedOption == i then
-                write(">>\t")
-            else
-                write("  \t")
-            end
-            print(tOptions[i].name)
-        end
-        siblib.writeCenter("---- [================] ----")
+        local termName = switch(iLayerDepth,
+            case(2, function() return "Room modules control" end),
+            case(3, function() return "Elevator controls" end),
+            default(function() return "Control Panel" end)
+        )
+        drawMenu(termName, iLayerDepth)
         bUpdateMonitor = false
     end
 

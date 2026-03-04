@@ -30,10 +30,10 @@ end
 
 ---@param name string
 ---@param func function
----@param level? number
-local function addOption(name, func, level)
-    level = level or 1
-    tOptions[#tOptions+1] = { name = name, func = func }
+---@param layer? number
+local function addOption(name, func, layer)
+    layer = layer or 1
+    tOptions[layer][#tOptions[layer]+1] = { name = name, func = func }
 end
 
 addOption("Option 1", function ()
@@ -58,24 +58,28 @@ end)
 
 -- Terminal section
 
+---@param title string
+---@param layer? number
+local function drawMenu(title, layer)
+    layer = layer or 1
+    siblib.writeCenter("---- ["..title.."] ----")
+    term.setTextColor(colors.white)
+    for i=1, #tOptions[layer] do
+        if iSelectedOption == i then
+            write(">>\t")
+        else
+            write("  \t")
+        end
+        print(tOptions[layer][i].name)
+    end
+    siblib.writeCenter("---- ["..string.rep("=", #title).."] ----")
+end
+
 while true do
 
     if bUpdateMonitor then
         siblib.clearTerm()
-        print("---- [Interactive Terminal] ----")
-        term.setTextColor(colors.lightGray)
-        print("<< Arrows to select")
-        print("<< Enter to confirm")
-        term.setTextColor(colors.white)
-        for i=1, #tOptions do
-            if iSelectedOption == i then
-                write(">>\t")
-            else
-                write("  \t")
-            end
-            print(tOptions[i].name)
-        end
-        print("---- [====================] ----")
+        drawMenu("Terminal Name")
         bUpdateMonitor = false
     end
 
