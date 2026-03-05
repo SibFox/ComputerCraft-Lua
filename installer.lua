@@ -67,7 +67,7 @@ function install(program)
         if fs.exists("/rom/modules/main/".. v.name) then
             print("Library ".. v.name .." is already present")
         else
-            shell.run("wget ".. v.link .." /rom/modules/main/".. v.name)
+            shell.run("wget ".. v.link .." ".. program .."/".. v.name)
         end
     end
     

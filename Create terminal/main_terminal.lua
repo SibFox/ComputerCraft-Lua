@@ -31,7 +31,7 @@ local function makeSelection()
 end
 
 -- Peripheral registering
-local motorOverallMainLine = peripheral.find("motor")
+-- local motorOverallMainLine = peripheral.find("motor")
 
 
 ----- Build options section
@@ -76,17 +76,17 @@ end, 0)
 
 -- Room modules
 addOption("Overall module", function ()
-    iLayerDepth = 1.1
+    iLayerDepth = 11
     print("Overall room selected")
 end, 1)
 
 addOption("Crushing module", function ()
-    iLayerDepth = 1.2
+    iLayerDepth = 12
     print("Crushing room selected")
 end, 1)
 
 addOption("Experience module", function ()
-    iLayerDepth = 1.3
+    iLayerDepth = 13
     print("Experience room selected")
 end, 1)
 
@@ -96,8 +96,8 @@ end, 1)
 
 -- 2.1 - Overall module
 addOption("Main line", function ()
-    changeOptionName(2.1, 1, "Main line - Disabled")
-end, 2.1)
+    changeOptionName(11, 1, "Main line - Disabled")
+end, 11)
 
 -- Terminal section
 
@@ -123,8 +123,8 @@ while true do
     if bUpdateMonitor then
         term_add.clearTerm()
         local termName = switch(iLayerDepth,
-            case(2, function() return "Room modules control" end),
-            case(3, function() return "Elevator controls" end),
+            case(1, function() return "Room modules control" end),
+            case(2, function() return "Elevator controls" end),
             default(function() return "Control Panel" end)
         )
         drawMenu(termName, iLayerDepth)
