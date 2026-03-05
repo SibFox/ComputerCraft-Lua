@@ -2,8 +2,6 @@ local term_add = require("terminal_additions")
 
 local args = { ... }
 
-local allowedUsers = { ... }
-
 local function defineUsersSetting()
     if type(settings.get("nzi_upd_users")) == "nil" then
         settings.define("nzi_upd_users", {
@@ -42,8 +40,8 @@ local function setRedstoneSide(side)
         defineRedstoneSideSetting()
         if side == "front" or side == "top" or side == "left" or side == "right" or side == "back" or side == "bottom" then
             settings.set("nzi_upd_rs_side", side)
-            print("[UPD_NZI] Redstone side output is set to "..side)
             settings.save("nzi/upd/settings.nzi")
+            print("[UPD_NZI] Redstone side output is set to "..side)
         else
             printError("[UPD_NZI] Wrong side declared")
         end
@@ -58,8 +56,8 @@ local function setRedstonePower(power)
         defineRedstonePowerSetting()
         if power >= 0 and power <= 15 then
             settings.set("nzi_upd_rs_power", power)
-            print("[UPD_NZI] Redstone power output is set to "..power)
             settings.save("nzi/upd/settings.nzi")
+            print("[UPD_NZI] Redstone power output is set to "..power)
         else
             printError("[UPD_NZI] Power should be >=0 and 15<=")
         end
@@ -100,7 +98,7 @@ local function getAllowedUsers()
     if type(usersSetting) ~= "nil" then
         if #usersSetting > 0 then
             for user in string.gmatch(usersSetting, "%a+") do
-            table.insert(users, user) 
+            table.insert(users, user)
             end
         end
     end
@@ -108,10 +106,12 @@ local function getAllowedUsers()
 end
 
 local function addUserInSetting(username)
-    newUser = getAllowedUsers()
-    table.insert(newUser, username)
-    usersStr = table.concat(newUser,";")
+    users = getAllowedUsers()
+    table.insert(users, username)
+    usersStr = table.concat(users,";")
     settings.set("nzi_upd_users", usersStr)
+    settings.save("nzi/upd/settings.nzi")
+    print("User with name " .. username .. " is added to protection")
 end
 
 local function removeUserInSetting(index)
@@ -119,28 +119,28 @@ local function removeUserInSetting(index)
     table.remove(users, index)
     usersStr = table.concat(users,";")
     settings.set("nzi_upd_users", usersStr)
+    settings.save("nzi/upd/settings.nzi")
+    print("User with name " .. username .. " is removed from protection")
 end
 
+---@param username string
 local function addUser(username)
     if type(username) ~= "nil" then
         defineUsersSetting()
         if not contains(getAllowedUsers(), username) then
             addUserInSetting(username)
-            print("User with name " .. username .. " is added to protection")
-            settings.save("nzi/upd/settings.nzi")
         end
     else
         print("Username is nil")
     end
 end
 
+---@param username string
 local function removeUser(username)
     if type(username) ~= "nil" then
         b, i = contains(getAllowedUsers(), username)
         if b then
             removeUserInSetting(i)
-            print("User with name " .. username .. " is removed from protection")
-            settings.save("nzi/upd/settings.nzi")
         end
     else
         print("Username is nil")
@@ -150,8 +150,7 @@ end
 local function doorCheck()
     defineRedstoneSideSetting()
     defineRedstonePowerSetting()
-    term.clear()
-    term.setCursorPos(1,1)
+    term_add.clearTerm()
     settings.load("nzi/upd/settings.nzi")
     while true do
         local event, username, device = os.pullEvent("playerClick")

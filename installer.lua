@@ -1,4 +1,4 @@
--- Code by SibFox
+-- Modified by SibFox
 
 local githuburl = "https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Programs.txt"
 
@@ -8,7 +8,7 @@ local args = { ... }
 
 function exit(message, isError)
     term.setTextColor(isError and colors.red or colors.yellow)
-    print(">"..message)
+    print("> "..message)
     term.setTextColor(colors.white)
     if isError then
         error()
@@ -64,7 +64,11 @@ function install(program)
     for _, v in ipairs(libraries) do
         term.setTextColor(colors.yellow)
         print("Downloading library ".. v.name .."...")
-        shell.run("wget ".. v.link .." ".. program .."/api/".. v.name)
+        if fs.exists("/rom/modules/main/".. v.name) then
+            print("Library ".. v.name .." is already present")
+        else
+            shell.run("wget ".. v.link .." /rom/modules/main/".. v.name)
+        end
     end
     
     term.setTextColor(colors.yellow)
@@ -87,9 +91,9 @@ function delete(program)
     end
 
     term.setTextColor(colors.yellow)
-    print("WARNING: This option is quite primitive. It will uninstall all libraries used by this script even if they are used by others")
+    -- print("WARNING: This option is quite primitive. It will uninstall all libraries used by this script even if they are used by others")
 
-    print("Deleting program and libraries for '" .. program .. "'...")
+    print("Deleting program '" .. program .. "'...")
 
     if programs[program] == nil then
         exit("Program '" .. program .. "' does not exists", true)
@@ -107,23 +111,22 @@ function delete(program)
         if v.type == "program" then
            programPath = v.link
            programName = v.name
-        elseif v.type == "api" then
-            print(v)
-            table.insert(libraries, v)
+        -- elseif v.type == "api" then
+        --     table.insert(libraries, v)
         end
     end
 
-    for k, v in ipairs(libraries) do
-        term.setTextColor(colors.yellow)
-        print("Deleting library ".. v.name .."...")
-        shell.run("rm ".. program .."/api/".. v.name)
-        term.setTextColor(colors.lime)
-        print("Deleted library ".. v.name)
-    end
+    -- for k, v in ipairs(libraries) do
+    --     term.setTextColor(colors.yellow)
+    --     print("Deleting library ".. v.name .."...")
+    --     shell.run("rm ".. program .."/api/".. v.name)
+    --     term.setTextColor(colors.lime)
+    --     print("Deleted library ".. v.name)
+    -- end
 
     term.setTextColor(colors.yellow)
     print("Deleting program ".. program .."...")
-    shell.run("rm ".. program .."/".. programName)
+    -- shell.run("rm ".. program .."/".. programName)
     shell.run("rm ".. program .."/")
     term.setTextColor(colors.lime)
     print("Successfully uninstalled ".. program)
@@ -138,7 +141,6 @@ function showHelp()
     print("installer install <program> - Installs a program")
     print("installer update <program>  - Updates a program")
     print("installer delete <program>  - Deletes a program")
-    print("installer config <program>  - Configures a program after it is installed")
     term.setTextColor(colors.lightGray)
     print("---- [=========] ----")
     term.setTextColor(colors.white)
@@ -169,8 +171,6 @@ function executeInput()
         update(args[2])
     elseif #args >= 1 and args[1] == "delete" then
         delete(args[2])
-    elseif #args >= 1 and args[1] == "config" then
-        exit("Not implemented", false)
     elseif #args >= 1 then
         exit("Could not find command '" .. args[1] .. "' or you are missing arguments", false)
     end

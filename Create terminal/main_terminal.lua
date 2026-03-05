@@ -30,61 +30,74 @@ local function makeSelection()
     return tOptions[iLayerDepth][iSelectedOption].func()
 end
 
+-- Peripheral registering
+local motorOverallMainLine = peripheral.find("motor")
 
 
 ----- Build options section
 
 ---@param name string
 ---@param func function
----@param layer? number
-local function addOption(name, func, layer)
-    layer = layer or 1
+---@param layer number
+---@param onInitFunc? function
+local function addOption(name, func, layer, onInitFunc)
+    if onInitFunc ~= nil then
+        onInitFunc()
+    end
+    if layer < 0 then layer = 0 end
     tOptions[layer] = tOptions[layer] or {}
     tOptions[layer][#tOptions[layer]+1] = { name = name, func = func }
 end
 
+---@param layer number
+---@param index number
+---@param to string
+local function changeOptionName(layer, index, to)
+    local from = tOptions[layer][index]
+    if from ~= nil then
+        from.name = to
+    end
+end
+
 -- Main terminal
 addOption("Room modules control", function ()
-    iLayerDepth = 2
+    iLayerDepth = 1
     print("Room modules selected")
-    sleep(1)
-end, 1)
+end, 0)
 
 addOption("Elevator contorls", function ()
-    iLayerDepth = 3
+    iLayerDepth = 2
     print("Elevator controls selected")
-    sleep(1)
-end, 1)
+end, 0)
 
 addOption("Exit", function ()
     return true
-end, 1)
+end, 0)
 
 -- Room modules
-addOption("Overall room", function ()
-    iLayerDepth = 21
+addOption("Overall module", function ()
+    iLayerDepth = 1.1
     print("Overall room selected")
-    sleep(1)
-end, 2)
+end, 1)
 
-addOption("Crushing room", function ()
-    iLayerDepth = 1--22
+addOption("Crushing module", function ()
+    iLayerDepth = 1.2
     print("Crushing room selected")
-    sleep(1)
-end, 2)
+end, 1)
 
-addOption("Experience room", function ()
-    iLayerDepth = 23
+addOption("Experience module", function ()
+    iLayerDepth = 1.3
     print("Experience room selected")
-    sleep(1)
-end, 3)
+end, 1)
 
 addOption("Back", function ()
-    iLayerDepth = 1
-    print("Back selected")
-    sleep(1)
-end, 3)
+    iLayerDepth = 0
+end, 1)
 
+-- 2.1 - Overall module
+addOption("Main line", function ()
+    changeOptionName(2.1, 1, "Main line - Disabled")
+end, 2.1)
 
 -- Terminal section
 

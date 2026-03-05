@@ -21,10 +21,10 @@ defineVersion()
 
 term_add.clearTerm()
 
-local m = peripheral.find("modem") or error("> No modem attached!", 0)
+local m = peripheral.find("modem", rednet.open) or error("> No modem attached!", 0)
 local rl = peripheral.find("redstone_relay") or error("> No redstone relay attached!", 0)
 
-rednet.open("modem_0")
+-- rednet.open("modem_0")
 if not rednet.isOpen() then
     exit("> Couldn't establish connection! Rednet is not online.", true)
 end
@@ -34,7 +34,7 @@ while true do
     local enteredPass = ""
     local answer = false
     repeat
-        siblib.clearTerm()
+        term_add.clearTerm()
         hostID = hostID == nil and rednet.lookup(connectionProtocol.."_"..specification, connectionHost) or hostID
         if hostID == nil then
             printError("> Unnable to find crypt host! Termination password is the only available.")
@@ -68,5 +68,5 @@ while true do
     rl.setAnalogOutput("bottom", 15)
     sleep(3)
     rl.setAnalogOutput("bottom", 0)
-    siblib.clearTerm()
+    term_add.clearTerm()
 end

@@ -1,9 +1,9 @@
 {
     minigoma_main_terminal = {
         name = "Minigoma Main Terminal",
-        desc = "mmt",
+        desc = "Minigoma Main Terminal",
         path = "main_terminal",
-        version = "0.1.0",
+        version = "1.0.0",
         startup = "shell.run('minigoma_main_terminal/main_terminal.lua')",
         files = {
             {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Create%20terminal/main_terminal.lua", name = "main_terminal.lua", type = "program"},
@@ -11,22 +11,52 @@
             {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/terminal_additions.lua", name = "terminal_additions.lua", type = "api"},
         },
         needs = {
-            modem = true
+            
         }
     },
 
     user_protected_door = {
         name = "User Protected Door",
-        desc = "upd",
+        desc = "User Protected Door",
         path = "upd",
-        version = "0.1.0",
-        startup = "shell.run('user_protected_door/upd.lua')",
+        version = "1.0.0",
+        startup = "shell.run('user_protected_door/upd.lua run')",
         files = {
             {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Locks/Player%20Detecting%20Door.lua", name = "upd.lua", type = "program"},
             {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/terminal_additions.lua", name = "terminal_additions.lua", type = "api"},
         },
         needs = {
             
+        }
+    },
+
+    crypt_host = {
+        name = "Cryptographic Rednet host",
+        desc = "Cryptographic Rednet host",
+        path = "crypt_host",
+        version = "1.0.0",
+        startup = "shell.run('crypt_host/ch.lua run')",
+        files = {
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Locks/Crypt%20Host.lua", name = "ch.lua", type = "program"},
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/terminal_additions.lua", name = "terminal_additions.lua", type = "api"},
+        },
+        needs = {
+            modem = true
+        }
+    },
+
+    pass_door_modem = {
+        name = "Password Door with modem connection",
+        desc = "Password Door with modem connection",
+        path = "pdm",
+        version = "1.0.0",
+        startup = "shell.run('pass_door_modem/pdm.lua')",
+        files = {
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Locks/Password%20Door%20with%20modem%20connection.lua", name = "pdm.lua", type = "program"},
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/terminal_additions.lua", name = "terminal_additions.lua", type = "api"},
+        },
+        needs = {
+            modem = true
         }
     }
 }

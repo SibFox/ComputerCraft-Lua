@@ -33,9 +33,11 @@ end
 ---@param layer? number
 local function addOption(name, func, layer)
     layer = layer or 1
+    tOptions[layer] = tOptions[layer] or {}
     tOptions[layer][#tOptions[layer]+1] = { name = name, func = func }
 end
 
+-- Main Terminal
 addOption("Option 1", function ()
     print("Option 1 selected")
     sleep(1)
@@ -62,7 +64,7 @@ end)
 ---@param layer? number
 local function drawMenu(title, layer)
     layer = layer or 1
-    siblib.writeCenter("---- ["..title.."] ----")
+    print("---- ["..title.."] ----")
     term.setTextColor(colors.white)
     for i=1, #tOptions[layer] do
         if iSelectedOption == i then
@@ -72,7 +74,7 @@ local function drawMenu(title, layer)
         end
         print(tOptions[layer][i].name)
     end
-    siblib.writeCenter("---- ["..string.rep("=", #title).."] ----")
+    print("---- ["..string.rep("=", #title).."] ----")
 end
 
 while true do

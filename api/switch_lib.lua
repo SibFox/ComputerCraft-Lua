@@ -4,7 +4,7 @@ local function info()
     print("i> Switch module")
 end
 
----@param n number
+---@param n any
 ---@param ... any
 function switch(n, ...)
   for _,v in ipairs {...} do
