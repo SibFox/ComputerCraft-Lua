@@ -21,10 +21,10 @@ defineVersion()
 
 term_add.clearTerm()
 
-local m = peripheral.find("modem", rednet.open) or error("> No modem attached!", 0)
+local m = peripheral.find("modem") or error("> No modem attached!", 0)
 local rl = peripheral.find("redstone_relay") or error("> No redstone relay attached!", 0)
 
--- rednet.open("modem_0")
+rednet.open(peripheral.getName(m))
 if not rednet.isOpen() then
     exit("> Couldn't establish connection! Rednet is not online.", true)
 end

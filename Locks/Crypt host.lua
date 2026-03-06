@@ -8,11 +8,9 @@ local password = "door"
 
 term_add.clearTerm()
 
-local modem = peripheral.find("modem", rednet.open) or error("Modem is not found!")
+local m = peripheral.find("modem") or error("Modem is not found!")
 
-if modem then
-    rednet.open(modem) -- need side
-end
+rednet.open(peripheral.getName(m))
 if not rednet.isOpen() then
     term_add.exit("> Couldn't establish connection! Rednet is not online.", true)
 end

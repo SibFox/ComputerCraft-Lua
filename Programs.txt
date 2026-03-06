@@ -37,7 +37,7 @@
         version = "1.0.0",
         startup = "shell.run('crypt_host/ch.lua run')",
         files = {
-            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Locks/Crypt%20Host.lua", name = "ch.lua", type = "program"},
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Locks/Crypt%20host.lua", name = "ch.lua", type = "program"},
             {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/terminal_additions.lua", name = "terminal_additions.lua", type = "api"},
         },
         needs = {

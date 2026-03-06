@@ -71,11 +71,13 @@ end
 -- Main terminal
 addOption("Room modules control", function ()
     iLayerDepth = 1
+    iSelectedOption = 1
     print("Room modules selected")
 end, 0)
 
 addOption("Elevator contorls", function ()
     iLayerDepth = 2
+    iSelectedOption = 1
     print("Elevator controls selected")
 end, 0)
 
@@ -86,16 +88,19 @@ end, 0)
 -- 1 - Room modules
 addOption("Overall module", function ()
     iLayerDepth = 1.1
+    iSelectedOption = 1
     print("Overall room selected")
 end, 1)
 
 addOption("Crushing module", function ()
     iLayerDepth = 1.2
+    iSelectedOption = 1
     print("Crushing room selected")
 end, 1)
 
 addOption("Experience module", function ()
     iLayerDepth = 1.3
+    iSelectedOption = 1
     print("Experience room selected")
 end, 1)
 
