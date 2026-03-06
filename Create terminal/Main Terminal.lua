@@ -8,6 +8,8 @@ local default = switch_lib.default
 
 local payloadProtocol = "nzi_p_minigoma_motor_setting"
 
+term_add.clearTerm()
+
 local modem = peripheral.find("modem", function (name, modem)
     return modem.isWireless()
 end) or error("> No modem attached!", 0)
@@ -81,7 +83,7 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
         local _, answer = rednet.receive(payloadProtocol, 5)
         switch(answer,
             case(nil, function ()
-                term_add.exit("Connection to".. module .." ".. line .." motor is not established")
+                term_add.exit("Connection to ".. module .." ".. line .." motor is not established")
             end),
             case(0, function ()
                 changeOptionName(layer, iSelectedOption, line.." -> Disabled")
@@ -89,7 +91,7 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
             default(function() changeOptionName(layer, iSelectedOption, line.." -> Enabled") end)
         )
     end
-    addOption(line, payloadFunc, layer, payloadFunc)
+    addOption(line.. "-> No connection", payloadFunc, layer, payloadFunc)
 end
 
 -- Main terminal
