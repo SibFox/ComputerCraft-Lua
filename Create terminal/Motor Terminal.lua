@@ -22,6 +22,7 @@ end) or error("> No modem attached!", 0)
 
 local motor = peripheral.find("electric_motor", function (name, motor)
     iMotorSpeed = motor.getSpeed()
+    return true
 end) or error("> No electric motor attached!", 0)
 
 rednet.open(peripheral.getName(modem))
@@ -76,11 +77,21 @@ local function establisHost()
 end
 
 local function setCursorToInput()
-    setCursorToInput()
+    _, y = term.getSize()
+    for i = 9, y do
+        term.setCursorPos(i, 10)
+        write(" ")
+    end
+    term.setCursorPos(10, 10)
 end
 
 local function setCursorToLog()
-    setCursorToLog()
+    _, y = term.getSize()
+    for i = 1, y do
+        term.setCursorPos(i, 13)
+        write(" ")
+    end
+    term.setCursorPos(1, 13)
 end
 
 local function drawTerminal()
@@ -162,20 +173,21 @@ local function catchPayload()
 end
 
 local function awaitCommand()
+    setCursorToInput()
     local insert = io.read()
     insert = string.lower(insert)
     local tInserts = siblib.splitstr(insert)
-    switch(tInserts[0],
+    switch(tInserts[1],
         case("respecify", function ()
             rednet.unhost(connectionProtocol, connectionHost.."_"..getSpecificationSetting())
             bUnhosted = true
-            setSpecification(tInserts[1])
+            setSpecification(tInserts[2])
             establisHost()
         end),
         case("stop", stopMotor),
         case("reactivate", activateMotor),
         case("setspeed", function ()
-            local num = tonumber(tInserts[1])
+            local num = tonumber(tInserts[2])
             if num ~= nil then
                 iMotorSpeed = num
                 setMotorSpeed()
@@ -188,7 +200,7 @@ local function awaitCommand()
             sleep(5)
         end)
     )
-    bUpdateScreen = true
+    -- bUpdateScreen = true
 end
 
 local function awaitSleep() sleep(10) end

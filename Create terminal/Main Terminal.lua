@@ -91,7 +91,7 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
             default(function() changeOptionName(layer, iSelectedOption, line.." -> Enabled") end)
         )
     end
-    addOption(line.. "-> No connection", payloadFunc, layer, payloadFunc)
+    addOption(line.. " -> No connection", payloadFunc, layer, payloadFunc)
 end
 
 -- Main terminal
@@ -195,6 +195,9 @@ while true do
         term_add.clearTerm()
         local termName = switch(iLayerDepth,
             case(1, function() return "Room modules control" end),
+            case(1.1, function() return "Overall module" end),
+            case(1.2, function() return "Crushing module" end),
+            case(1.3, function() return "Experience module" end),
             case(2, function() return "Elevator controls" end),
             default(function() return "Control Panel" end)
         )
