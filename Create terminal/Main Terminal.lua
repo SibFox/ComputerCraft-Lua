@@ -1,11 +1,21 @@
 -- Code by SibFox
 
-local switch_lib = require("switch_lib")
 local term_add = require("terminal_additions")
-
+local switch_lib = require("switch_lib")
 local switch = switch_lib.switch
 local case = switch_lib.case
 local default = switch_lib.default
+
+local payloadProtocol = "nzi_p_minigoma_motor_setting"
+
+local modem = peripheral.find("modem", function (name, modem)
+    return modem.isWireless()
+end) or error("> No modem attached!", 0)
+
+rednet.open(peripheral.getName(modem))
+if not rednet.isOpen() then
+    term_add.exit("Couldn't establish connection! Rednet is not online.", true)
+end
 
 local tOptions = {}
 local iSelectedOption = 1
@@ -30,17 +40,6 @@ local function makeSelection()
     return tOptions[iLayerDepth][iSelectedOption].func()
 end
 
--- Лучше сделать через Rednet - и легко масштабируется и читаемей
--- Прослушка идёт по протоколу - соотвественно пэйлоуд должен быть таблицей
--- содержащей указатель, какой мотор и как будет задействован
--- Для этого нужно будет посылать бродкаст по конкретному протоколу
-
--- Однако не обязательно, так как хостить можно как по одному протоколу, так и по одному хосту
--- Задать протокол отвечающий за электро моторы, при лукапе он будет выдавать айди всех хостов
--- Хотя по этим айди не определить точно местоположения мотора, посему пейлоуд пока акутальнее
-
--- Peripheral registering
--- local motorOverallMainLine = peripheral.find("motor")
 
 
 ----- Build options section
@@ -66,6 +65,31 @@ local function changeOptionName(layer, index, to)
     if from ~= nil then
         from.name = to
     end
+end
+
+---@param module string
+---@param line string
+---@param spec string
+---@param layer number
+local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
+    local payloadFunc = function()
+        local payload = {
+            to = spec,
+            task = { name = "getstate" }
+        }
+        rednet.broadcast(payload, payloadProtocol)
+        local _, answer = rednet.receive(payloadProtocol, 5)
+        switch(answer,
+            case(nil, function ()
+                term_add.exit("Connection to".. module .." ".. line .." motor is not established")
+            end),
+            case(0, function ()
+                changeOptionName(layer, iSelectedOption, line.." -> Disabled")
+            end),
+            default(function() changeOptionName(layer, iSelectedOption, line.." -> Enabled") end)
+        )
+    end
+    addOption(line, payloadFunc, layer, payloadFunc)
 end
 
 -- Main terminal
@@ -110,9 +134,9 @@ addOption("Back", function ()
 end, 1)
 
 -- 1.1 - Overall module
-addOption("Main line - Enabled", function ()
-    changeOptionName(1.1, 1, "Main line - Disabled")
-end, 1.1)
+addOptionWithChangingNameOnPayload("Overall", "Main Line", "overall_main", 1.1)
+addOptionWithChangingNameOnPayload("Overall", "Generic Machines", "overall_generic", 1.1)
+addOptionWithChangingNameOnPayload("Overall", "Mechanical Crafter", "overall_crafter", 1.1)
 
 addOption("Back", function ()
     iLayerDepth = 1
@@ -120,9 +144,7 @@ addOption("Back", function ()
 end, 1.1)
 
 -- 1.2 - Crushing module
-addOption("Module - Enabled", function ()
-    changeOptionName(1.2, 1, "Module - Disabled")
-end, 1.2)
+addOptionWithChangingNameOnPayload("Crushing", "Module", "crushing_main", 1.2)
 
 addOption("Back", function ()
     iLayerDepth = 1
@@ -130,9 +152,7 @@ addOption("Back", function ()
 end, 1.2)
 
 -- 1.3 - Experience module
-addOption("Module - Enabled", function ()
-    changeOptionName(1.3, 1, "Module - Disabled")
-end, 1.3)
+addOptionWithChangingNameOnPayload("Experience", "Module", "experience_main", 1.3)
 
 addOption("Back", function ()
     iLayerDepth = 1
@@ -144,6 +164,7 @@ addOption("Back", function ()
     iLayerDepth = 0
     iSelectedOption = 1
 end, 2)
+
 
 
 -- Terminal section

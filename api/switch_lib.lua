@@ -14,7 +14,7 @@ function switch(n, ...)
   end
 end
 
----@param n number
+---@param n any
 ---@param f function
 function case(n,f)
   return {n,f}
