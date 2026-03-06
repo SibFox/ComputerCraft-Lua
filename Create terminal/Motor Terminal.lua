@@ -9,6 +9,7 @@ local default = switch_lib.default
 
 local connectionProtocol, connectionHost = "nzi_p_minigoma_motor_setting", "nzi_h_minigoma_motor_setting"
 local sSettingSpecification = "nzi_mh_specification"
+local sSettingsPath = "nzi/mh/settings.nzi"
 
 local bUnhosted = true
 local bUpdateScreen = true
@@ -30,9 +31,9 @@ if not rednet.isOpen() then
     term_add.exit("Couldn't establish connection! Rednet is not online.", true)
 end
 
-local function getSpecificationSetting()
-    return settings.get(sSettingSpecification, nil)
-end
+settings.load(sSettingsPath)
+
+local function getSpecificationSetting() return settings.get(sSettingSpecification, nil) end
 
 local function defineSpecificationSetting()
     if getSpecificationSetting() == nil then
@@ -50,7 +51,7 @@ local function setSpecification(spec)
     if type(spec) == "string" then
         defineSpecificationSetting()
         settings.set(sSettingSpecification, spec)
-        settings.save("nzi/mh/settings.nzi")
+        settings.save(sSettingsPath)
         print("[MH_NZI] Host specification is set to '"..spec.."'")
         return true
     else
@@ -214,6 +215,6 @@ while true do
         bUpdateScreen = false
     end
 
-    parallel.waitForAny(catchPayload, awaitCommand, awaitSleep)
+    parallel.waitForAny(catchPayload, awaitCommand)
 
 end
