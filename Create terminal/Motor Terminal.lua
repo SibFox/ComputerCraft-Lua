@@ -156,9 +156,8 @@ local function catchPayload()
     local id, payload
     repeat
         id, payload = rednet.receive(connectionProtocol)
-        sleep(0.5)
     until #payload > 0
-    
+    writeToLog("Payload cathced with name ".. payload.name)
     if payload.to == getSpecificationSetting() then
         switch(payload.task.name,
             case("stop", stopMotor),
@@ -169,18 +168,22 @@ local function catchPayload()
             end),
             case("getstate", function ()
                 if motor.getSpeed() == 0 then
-                    rednet.send(id, 0, connectionProtocol)
-                    writeToLog("Send message '0' to ".. id)
+                    if rednet.send(id, 0, connectionProtocol) then
+                        writeToLog("Send message '0' to ".. id)
+                    end
+                    writeToLog("Couldn't send message '0' to ".. id)
                     return
                 end
-                rednet.send(id, "active", connectionProtocol)
-                writeToLog("Send message 'active' to ".. id)
+                if rednet.send(id, "active", connectionProtocol) == true then
+                    writeToLog("Send message 'active' to ".. id)
+                end
+                writeToLog("Couldn't send message 'active' to ".. id)
             end),
             default(function ()
                 writeToLog("Unsuspected task from payload")
             end)
         )
-        bUpdateScreen = true
+        -- bUpdateScreen = true
     end
 end
 
