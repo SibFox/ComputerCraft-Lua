@@ -60,7 +60,7 @@ local function setSpecification(spec)
     end
 end
 
-local function establisHost()
+local function establishHost()
     if bUnhosted then
         defineSpecificationSetting()
         local specification = getSpecificationSetting()
@@ -78,8 +78,8 @@ local function establisHost()
 end
 
 local function setCursorToInput()
-    _, y = term.getSize()
-    for i = 9, y do
+    x, _ = term.getSize()
+    for i = 9, x do
         term.setCursorPos(i, 10)
         write(" ")
     end
@@ -87,8 +87,8 @@ local function setCursorToInput()
 end
 
 local function setCursorToLog()
-    _, y = term.getSize()
-    for i = 1, y do
+    x, _ = term.getSize()
+    for i = 1, x do
         term.setCursorPos(i, 13)
         write(" ")
     end
@@ -120,7 +120,6 @@ local function stopMotor()
     setCursorToLog()
     print("Motor stopped")
     setCursorToInput()
-    sleep(5)
 end
 
 local function activateMotor()
@@ -128,16 +127,18 @@ local function activateMotor()
     setCursorToLog()
     print("Motor activated with speed "..iMotorSpeed)
     setCursorToInput()
-    sleep(5)
 end
 
 local function setMotorSpeed()
     iMotorSpeed = siblib.clamp(iMotorSpeed, -256, 256)
     motor.setSpeed(iMotorSpeed)
+    term.setCursorPos(12, 3)
+    write("   ")
+    term.setCursorPos(12, 3)
+    write(iMotorSpeed)
     setCursorToLog()
     print("Motor speed changed to "..iMotorSpeed)
     setCursorToInput()
-    sleep(5)
 end
 
 local function catchPayload()
@@ -180,10 +181,24 @@ local function awaitCommand()
     local tInserts = siblib.splitstr(insert)
     switch(tInserts[1],
         case("respecify", function ()
+            x, _ = term.getSize()
+            if string.len(tInserts[2]) > x - 20 then
+                setCursorToLog()
+                print("Specification name is too long")
+                setCursorToInput()
+                return
+            end
             rednet.unhost(connectionProtocol, connectionHost.."_"..getSpecificationSetting())
             bUnhosted = true
+            setCursorToLog()
             setSpecification(tInserts[2])
-            establisHost()
+            term.setCursorPos(20, 2)
+            for i = 20, x do
+                write(" ")
+            end
+            term.setCursorPos(20, 2)
+            write(getSpecificationSetting())
+            establishHost()
         end),
         case("stop", stopMotor),
         case("reactivate", activateMotor),
@@ -198,7 +213,6 @@ local function awaitCommand()
             setCursorToLog()
             print("Unknown command")
             setCursorToInput()
-            sleep(5)
         end)
     )
     -- bUpdateScreen = true
@@ -208,7 +222,7 @@ local function awaitSleep() sleep(10) end
 
 while true do
 
-    establisHost()
+    establishHost()
 
     if bUpdateScreen then
         drawTerminal()
