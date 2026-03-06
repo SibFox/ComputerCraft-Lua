@@ -4,7 +4,7 @@
         desc = "Minigoma Main Terminal",
         path = "main_terminal",
         version = "1.0.0",
-        startup = "shell.run('minigoma_main_terminal/main_terminal.lua')",
+        startup = "shell.run('mmt/main_terminal.lua')",
         files = {
             {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Create%20terminal/main_terminal.lua", name = "main_terminal.lua", type = "program"},
             {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/switch_lib.lua", name = "switch_lib.lua", type = "api"},

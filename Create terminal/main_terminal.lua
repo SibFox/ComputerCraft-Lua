@@ -9,7 +9,7 @@ local default = switch_lib.default
 
 local tOptions = {}
 local iSelectedOption = 1
-local iLayerDepth = 1
+local iLayerDepth = 0
 local bUpdateMonitor = true
 
 local function selectionUp()
@@ -83,7 +83,7 @@ addOption("Exit", function ()
     return true
 end, 0)
 
--- Room modules
+-- 1 - Room modules
 addOption("Overall module", function ()
     iLayerDepth = 1.1
     print("Overall room selected")
@@ -101,12 +101,45 @@ end, 1)
 
 addOption("Back", function ()
     iLayerDepth = 0
+    iSelectedOption = 1
 end, 1)
 
--- 2.1 - Overall module
-addOption("Main line", function ()
+-- 1.1 - Overall module
+addOption("Main line - Enabled", function ()
     changeOptionName(1.1, 1, "Main line - Disabled")
 end, 1.1)
+
+addOption("Back", function ()
+    iLayerDepth = 1
+    iSelectedOption = 1
+end, 1.1)
+
+-- 1.2 - Crushing module
+addOption("Module - Enabled", function ()
+    changeOptionName(1.2, 1, "Module - Disabled")
+end, 1.2)
+
+addOption("Back", function ()
+    iLayerDepth = 1
+    iSelectedOption = 1
+end, 1.2)
+
+-- 1.3 - Experience module
+addOption("Module - Enabled", function ()
+    changeOptionName(1.3, 1, "Module - Disabled")
+end, 1.3)
+
+addOption("Back", function ()
+    iLayerDepth = 1
+    iSelectedOption = 1
+end, 1.3)
+
+-- 2 - Elevator controls
+addOption("Back", function ()
+    iLayerDepth = 0
+    iSelectedOption = 1
+end, 2)
+
 
 -- Terminal section
 
