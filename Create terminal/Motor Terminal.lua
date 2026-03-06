@@ -31,11 +31,11 @@ if not rednet.isOpen() then
 end
 
 local function getSpecificationSetting()
-    return settings.get(sSettingSpecification)
+    return settings.get(sSettingSpecification, nil)
 end
 
 local function defineSpecificationSetting()
-    if type(getSpecificationSetting()) == "nil" then
+    if getSpecificationSetting() == nil then
         settings.define(sSettingSpecification, {
             description = "Motor host specification",
             default = "",
@@ -63,7 +63,7 @@ local function establisHost()
     if bUnhosted then
         defineSpecificationSetting()
         local specification = getSpecificationSetting()
-        if #specification == 0 or specification == nil then
+        if string.len(specification) == 0 or specification == nil then
             print("> Host specification is not defined")
             write("> Define specification: ")
             if not setSpecification(io.read()) then
