@@ -15,13 +15,13 @@ local bUpdateMonitor = true
 local function selectionUp()
     iSelectedOption = iSelectedOption - 1
     if iSelectedOption < 1 then
-        iSelectedOption = #tOptions
+        iSelectedOption = #tOptions[iLayerDepth]
     end
 end
 
 local function selectionDown()
     iSelectedOption = iSelectedOption + 1
-    if iSelectedOption > #tOptions then
+    if iSelectedOption > #tOptions[iLayerDepth] then
         iSelectedOption = 1
     end
 end
@@ -29,6 +29,15 @@ end
 local function makeSelection()
     return tOptions[iLayerDepth][iSelectedOption].func()
 end
+
+-- Лучше сделать через Rednet - и легко масштабируется и читаемей
+-- Прослушка идёт по протоколу - соотвественно пэйлоуд должен быть таблицей
+-- содержащей указатель, какой мотор и как будет задействован
+-- Для этого нужно будет посылать бродкаст по конкретному протоколу
+
+-- Однако не обязательно, так как хостить можно как по одному протоколу, так и по одному хосту
+-- Задать протокол отвечающий за электро моторы, при лукапе он будет выдавать айди всех хостов
+-- Хотя по этим айди не определить точно местоположения мотора, посему пейлоуд пока акутальнее
 
 -- Peripheral registering
 -- local motorOverallMainLine = peripheral.find("motor")
@@ -76,17 +85,17 @@ end, 0)
 
 -- Room modules
 addOption("Overall module", function ()
-    iLayerDepth = 11
+    iLayerDepth = 1.1
     print("Overall room selected")
 end, 1)
 
 addOption("Crushing module", function ()
-    iLayerDepth = 12
+    iLayerDepth = 1.2
     print("Crushing room selected")
 end, 1)
 
 addOption("Experience module", function ()
-    iLayerDepth = 13
+    iLayerDepth = 1.3
     print("Experience room selected")
 end, 1)
 
@@ -96,15 +105,15 @@ end, 1)
 
 -- 2.1 - Overall module
 addOption("Main line", function ()
-    changeOptionName(11, 1, "Main line - Disabled")
-end, 11)
+    changeOptionName(1.1, 1, "Main line - Disabled")
+end, 1.1)
 
 -- Terminal section
 
 ---@param title string
 ---@param layer? number
 local function drawMenu(title, layer)
-    layer = layer or 1
+    if layer < 0 then layer = 0 end
     print("---- ["..title.."] ----")
     term.setTextColor(colors.white)
     for i=1, #tOptions[layer] do
@@ -121,6 +130,7 @@ end
 while true do
 
     if bUpdateMonitor then
+        bUpdateMonitor = false
         term_add.clearTerm()
         local termName = switch(iLayerDepth,
             case(1, function() return "Room modules control" end),
@@ -128,7 +138,6 @@ while true do
             default(function() return "Control Panel" end)
         )
         drawMenu(termName, iLayerDepth)
-        bUpdateMonitor = false
     end
 
     local sEvent, input = os.pullEvent("key")

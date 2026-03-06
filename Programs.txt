@@ -1,5 +1,5 @@
 {
-    minigoma_main_terminal = {
+    mmt = {
         name = "Minigoma Main Terminal",
         desc = "Minigoma Main Terminal",
         path = "main_terminal",
