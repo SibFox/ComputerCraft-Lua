@@ -40,9 +40,9 @@ function install(program)
         exit("Program is already installed. Either use the 'delete' or 'update' command", true)
     end
 
-    if #startup > 0 then
+    if string.len(startup) > 0 then
         if fs.exists("startup") then
-            fs.delete("startup")            
+            fs.delete("startup")
         end
         local sfile = fs.open("startup", "w")
         sfile.write(startup)
