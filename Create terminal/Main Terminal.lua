@@ -84,6 +84,7 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
         switch(answer,
             case(nil, function ()
                 term_add.exit("Connection to ".. module .." ".. line .." motor is not established")
+                sleep(1)
             end),
             case(0, function ()
                 changeOptionName(layer, iSelectedOption, line.." -> Disabled")

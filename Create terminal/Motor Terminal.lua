@@ -99,6 +99,13 @@ local function setCursorToLog()
     term.setCursorPos(1, 13)
 end
 
+---@param message string
+local function writeToLog(message)
+    setCursorToLog()
+    print(message)
+    setCursorToInput()
+end
+
 local function drawTerminal()
     term_add.clearTerm()
     term.setTextColor(colors.lightGray)
@@ -150,7 +157,7 @@ local function catchPayload()
     repeat
         id, payload = rednet.receive(connectionProtocol)
         sleep(0.5)
-    until #message > 0
+    until #payload > 0
     
     if payload.to == getSpecificationSetting() then
         switch(payload.task.name,
@@ -163,14 +170,14 @@ local function catchPayload()
             case("getstate", function ()
                 if motor.getSpeed() == 0 then
                     rednet.send(id, 0, connectionProtocol)
+                    writeToLog("Send message '0' to ".. id)
                     return
                 end
                 rednet.send(id, "active", connectionProtocol)
+                writeToLog("Send message 'active' to ".. id)
             end),
             default(function ()
-                setCursorToLog()
-                print("Unsuspected task from payload")
-                setCursorToInput()
+                writeToLog("Unsuspected task from payload")
             end)
         )
         bUpdateScreen = true
