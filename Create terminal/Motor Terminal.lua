@@ -82,15 +82,19 @@ local function setCursorToInput()
     for i = 9, x do
         term.setCursorPos(i, 10)
         write(" ")
+        term.setCursorPos(i, 11)
+        write(" ")
     end
     term.setCursorPos(10, 10)
 end
 
 local function setCursorToLog()
-    x, _ = term.getSize()
+    x, y = term.getSize()
     for i = 1, x do
-        term.setCursorPos(i, 13)
-        write(" ")
+        for j = 13, y do
+            term.setCursorPos(i, j)
+            write(" ")
+        end
     end
     term.setCursorPos(1, 13)
 end
@@ -167,7 +171,6 @@ local function catchPayload()
                 setCursorToLog()
                 print("Unsuspected task from payload")
                 setCursorToInput()
-                sleep(5)
             end)
         )
         bUpdateScreen = true
@@ -192,13 +195,14 @@ local function awaitCommand()
             bUnhosted = true
             setCursorToLog()
             setSpecification(tInserts[2])
+            establishHost()
             term.setCursorPos(20, 2)
             for i = 20, x do
+                term.setCursorPos(i, 2)
                 write(" ")
             end
             term.setCursorPos(20, 2)
             write(getSpecificationSetting())
-            establishHost()
         end),
         case("stop", stopMotor),
         case("reactivate", activateMotor),
