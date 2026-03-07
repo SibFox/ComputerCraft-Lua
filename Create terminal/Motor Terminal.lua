@@ -170,12 +170,14 @@ local function catchPayload()
             if motor.getSpeed() == 0 then
                 if rednet.send(id, 0, connectionProtocol) then
                     writeToLog("Send message '0' to ".. id)
+                    return
                 end
                 writeToLog("Couldn't send message '0' to ".. id)
                 return
             end
-            if rednet.send(id, "active", connectionProtocol) == true then
+            if rednet.send(id, "active", connectionProtocol) then
                 writeToLog("Send message 'active' to ".. id)
+                return
             end
             writeToLog("Couldn't send message 'active' to ".. id)
         end),

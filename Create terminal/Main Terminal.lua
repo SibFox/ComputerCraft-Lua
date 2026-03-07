@@ -82,12 +82,12 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
         rednet.broadcast(payload, payloadProtocol)
         local _, answer = rednet.receive(payloadProtocol, 5)
         switch(answer,
+            case(0, function ()
+                changeOptionName(layer, iSelectedOption, line.." -> Disabled")
+            end),
             case(nil, function ()
                 term_add.exit("Connection to ".. module .." ".. line .." motor is not established")
                 sleep(1)
-            end),
-            case(0, function ()
-                changeOptionName(layer, iSelectedOption, line.." -> Disabled")
             end),
             default(function() changeOptionName(layer, iSelectedOption, line.." -> Enabled") end)
         )
