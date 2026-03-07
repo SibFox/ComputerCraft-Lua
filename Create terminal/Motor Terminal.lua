@@ -148,16 +148,17 @@ local function setMotorSpeed()
     term.setCursorPos(12, 3)
     write(iMotorSpeed)
     setCursorToLog()
-    print("Motor speed changed to "..iMotorSpeed)
+    print("Motor speed changed to ".. iMotorSpeed)
     setCursorToInput()
 end
 
 local function catchPayload()
     local id, payload
     repeat
+        writeToLog("Awaiting payload ".. os.time())
         id, payload = rednet.receive(connectionProtocol)
     until #payload > 0
-    writeToLog("Payload cathced with name ".. payload.name)
+    writeToLog("Payload catched with name ".. payload.name)
     if payload.to == getSpecificationSetting() then
         switch(payload.task.name,
             case("stop", stopMotor),
@@ -183,7 +184,6 @@ local function catchPayload()
                 writeToLog("Unsuspected task from payload")
             end)
         )
-        -- bUpdateScreen = true
     end
 end
 
