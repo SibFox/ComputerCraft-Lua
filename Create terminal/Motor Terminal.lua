@@ -155,36 +155,34 @@ end
 local function catchPayload()
     local id, payload
     repeat
-        writeToLog("Awaiting payload ".. os.time())
+        -- writeToLog("Awaiting payload ".. os.time())
         id, payload = rednet.receive(connectionProtocol)
-    until #payload > 0
-    writeToLog("Payload catched with name ".. payload.name)
-    if payload.to == getSpecificationSetting() then
-        switch(payload.task.name,
-            case("stop", stopMotor),
-            case("reactivate", activateMotor),
-            case("setspeed", function ()
-                iMotorSpeed = payload.task.value
-                setMotorSpeed()
-            end),
-            case("getstate", function ()
-                if motor.getSpeed() == 0 then
-                    if rednet.send(id, 0, connectionProtocol) then
-                        writeToLog("Send message '0' to ".. id)
-                    end
-                    writeToLog("Couldn't send message '0' to ".. id)
-                    return
+    until payload.to == getSpecificationSetting()
+    writeToLog("Payload catched with name '".. payload.task.name.. "' to '".. payload.to .."'")
+    switch(payload.task.name,
+        case("stop", stopMotor),
+        case("reactivate", activateMotor),
+        case("setspeed", function ()
+            iMotorSpeed = payload.task.value
+            setMotorSpeed()
+        end),
+        case("getstate", function ()
+            if motor.getSpeed() == 0 then
+                if rednet.send(id, 0, connectionProtocol) then
+                    writeToLog("Send message '0' to ".. id)
                 end
-                if rednet.send(id, "active", connectionProtocol) == true then
-                    writeToLog("Send message 'active' to ".. id)
-                end
-                writeToLog("Couldn't send message 'active' to ".. id)
-            end),
-            default(function ()
-                writeToLog("Unsuspected task from payload")
-            end)
-        )
-    end
+                writeToLog("Couldn't send message '0' to ".. id)
+                return
+            end
+            if rednet.send(id, "active", connectionProtocol) == true then
+                writeToLog("Send message 'active' to ".. id)
+            end
+            writeToLog("Couldn't send message 'active' to ".. id)
+        end),
+        default(function ()
+            writeToLog("Unsuspected task from payload")
+        end)
+    )
 end
 
 local function awaitCommand()
