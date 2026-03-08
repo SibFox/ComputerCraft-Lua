@@ -157,27 +157,29 @@ local function drawTerminal()
 end
 
 ---@param speed number
-local function setMotorSpeed(speed)
-    motorSpeed = siblib.clamp(speed, -256, 256)
-    setSettingMotorSpeed(motorSpeed)
+local function writeSpeed(speed)
+    motorSpeed = speed
     motor.setSpeed(motorSpeed)
     term.setCursorPos(12, 3)
     write("    ")
     term.setCursorPos(12, 3)
-    writeToLog("Motor speed changed to ".. motorSpeed)
     if motorSpeed == 0 then
         motorSpeed = "Stopped"
     end
     write(motorSpeed)
 end
 
+---@param speed number
+local function setMotorSpeed(speed)
+    speed = siblib.clamp(speed, -256, 256)
+    writeSpeed(speed)
+    setSettingMotorSpeed(speed)
+    writeToLog("Motor speed changed to ".. speed)
+end
+
 ---@param comp_id? number
 local function stopMotor(comp_id)
-    motor.stop()
-    term.setCursorPos(12, 3)
-    write("    ")
-    term.setCursorPos(12, 3)
-    write("Stopped")
+    writeSpeed(0)
     writeToLog("Motor stopped")
     if comp_id ~= nil then
         rednet.send(comp_id, { task = { name = "disable" } }, connectionProtocol)
@@ -186,8 +188,9 @@ end
 
 ---@param comp_id? number
 local function activateMotor(comp_id)
-    writeToLog("Motor activated with speed ".. getSettingMotorSpeed())
-    motor.setSpeed(getSettingMotorSpeed())
+    local speed = getSettingMotorSpeed()
+    writeSpeed(speed)
+    writeToLog("Motor activated with speed ".. speed)
     if comp_id ~= nil then
         rednet.send(comp_id, { task = { name = "activate" } }, connectionProtocol)
     end
