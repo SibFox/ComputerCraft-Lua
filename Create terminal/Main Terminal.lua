@@ -203,7 +203,11 @@ local function drawMenu(title, layer)
         else
             write("  \t")
         end
-        tOptions[layer][i].showFunc()
+        local showFunc = tOptions[layer][i].showFunc
+        if showFunc ~= nil then
+            showFunc()
+        end
+        
         print(tOptions[layer][i].name)
     end
     print("---- ["..string.rep("=", #title).."] ----")
