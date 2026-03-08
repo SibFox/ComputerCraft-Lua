@@ -9,15 +9,16 @@ local default = switch_lib.default
 
 local connectionProtocol, connectionHost = "nzi_p_minigoma_motor_setting", "nzi_h_minigoma_motor_setting"
 local sSettingSpecification = "nzi_mh_specification"
+local sSettingMotorSpeed = "nzi_mh_motor_speed"
 local sSettingsPath = "nzi/mh/settings.nzi"
 
 local bUnhosted = true
 local bUpdateScreen = true
-local iMotorSpeed = 0
 
 term_add.clearTerm()
 
 local modem = peripheral.find("modem", function (name, modem)
+    rednet.open(name)
     return modem.isWireless()
 end) or error("> No modem attached!", 0)
 
@@ -26,17 +27,17 @@ local motor = peripheral.find("electric_motor", function (name, motor)
     return true
 end) or error("> No electric motor attached!", 0)
 
-rednet.open(peripheral.getName(modem))
 if not rednet.isOpen() then
     term_add.exit("Couldn't establish connection! Rednet is not online.", true)
 end
 
 settings.load(sSettingsPath)
 
-local function getSpecificationSetting() return settings.get(sSettingSpecification, nil) end
+local function getSpecification() return settings.get(sSettingSpecification, nil) end
+local function getSettingMotorSpeed() return settings.get(sSettingMotorSpeed, nil) end
 
 local function defineSpecificationSetting()
-    if getSpecificationSetting() == nil then
+    if getSpecification() == nil then
         settings.define(sSettingSpecification, {
             description = "Motor host specification",
             default = "",
@@ -46,8 +47,19 @@ local function defineSpecificationSetting()
     end
 end
 
+local function defineMotorSpeedSetting()
+    if getSettingMotorSpeed() == nil then
+        settings.define(sSettingMotorSpeed, {
+            description = "Motor speed",
+            default = "",
+            type = "number"
+        })
+        print("[MH_NZI] Motor speed setting defined")
+    end
+end
+
 ---@param spec string
-local function setSpecification(spec)
+local function setSettingSpecification(spec)
     if type(spec) == "string" then
         defineSpecificationSetting()
         settings.set(sSettingSpecification, spec)
@@ -60,14 +72,28 @@ local function setSpecification(spec)
     end
 end
 
+---@param speed number
+local function setSettingMotorSpeed(speed)
+    if type(speed) == "number" then
+        defineMotorSpeedSetting()
+        settings.set(sSettingMotorSpeed, speed)
+        settings.save(sSettingsPath)
+        print("[MH_NZI] Motor speed is set to '"..speed.."'")
+        return true
+    else
+        printError("[MH_NZI] Motor speed should be a number")
+        return false
+    end
+end
+
 local function establishHost()
     if bUnhosted then
         defineSpecificationSetting()
-        local specification = getSpecificationSetting()
+        local specification = getSpecification()
         if string.len(specification) == 0 or specification == nil then
             print("> Host specification is not defined")
             write("> Define specification: ")
-            if not setSpecification(io.read()) then
+            if not setSettingSpecification(io.read()) then
                 term_add.exit("Couldn't establish host! Exiting from program...")
             end
         end
@@ -111,7 +137,7 @@ local function drawTerminal()
     term.setTextColor(colors.lightGray)
     print("---- [Motor Terminal] ----")
     term.setTextColor(colors.white)
-    print("> Specification -> ".. getSpecificationSetting())
+    print("> Specification -> ".. getSpecification())
     print("> Speed -> ".. motor.getSpeed())
     print("> Command Pallette")
     print("- respecify <string> - new spec name")
@@ -128,43 +154,37 @@ end
 
 local function stopMotor()
     motor.stop()
-    setCursorToLog()
-    print("Motor stopped")
-    setCursorToInput()
+    writeToLog("Motor stopped")
 end
 
 local function activateMotor()
-    motor.setSpeed(iMotorSpeed)
-    setCursorToLog()
-    print("Motor activated with speed "..iMotorSpeed)
-    setCursorToInput()
+    motor.setSpeed(getSettingMotorSpeed())
+    writeToLog("Motor activated with speed ".. getSettingMotorSpeed())
 end
 
-local function setMotorSpeed()
-    iMotorSpeed = siblib.clamp(iMotorSpeed, -256, 256)
-    motor.setSpeed(iMotorSpeed)
+---@param speed number
+local function setMotorSpeed(speed)
+    motorSpeed = siblib.clamp(speed, -256, 256)
+    setSettingMotorSpeed(motorSpeed)
+    motor.setSpeed(motorSpeed)
     term.setCursorPos(12, 3)
     write("   ")
     term.setCursorPos(12, 3)
-    write(iMotorSpeed)
-    setCursorToLog()
-    print("Motor speed changed to ".. iMotorSpeed)
-    setCursorToInput()
+    write(motorSpeed)
+    writeToLog("Motor speed changed to ".. motorSpeed)
 end
 
 local function catchPayload()
     local id, payload
     repeat
-        -- writeToLog("Awaiting payload ".. os.time())
         id, payload = rednet.receive(connectionProtocol)
-    until payload.to == getSpecificationSetting()
-    writeToLog("Payload catched with name '".. payload.task.name.. "' to '".. payload.to .."'")
+    until payload.to == getSpecification()
+    writeToLog("Payload catched with name '".. payload.task.name .."' to '".. payload.to .."'")
     switch(payload.task.name,
         case("stop", stopMotor),
         case("reactivate", activateMotor),
         case("setspeed", function ()
-            iMotorSpeed = payload.task.value
-            setMotorSpeed()
+            setMotorSpeed(payload.task.value)
         end),
         case("getstate", function ()
             if motor.getSpeed() == 0 then
@@ -201,10 +221,10 @@ local function awaitCommand()
                 setCursorToInput()
                 return
             end
-            rednet.unhost(connectionProtocol, connectionHost.."_"..getSpecificationSetting())
+            rednet.unhost(connectionProtocol, connectionHost.."_"..getSpecification())
             bUnhosted = true
             setCursorToLog()
-            setSpecification(tInserts[2])
+            setSettingSpecification(tInserts[2])
             establishHost()
             term.setCursorPos(20, 2)
             for i = 20, x do
@@ -212,27 +232,28 @@ local function awaitCommand()
                 write(" ")
             end
             term.setCursorPos(20, 2)
-            write(getSpecificationSetting())
+            write(getSpecification())
         end),
         case("stop", stopMotor),
         case("reactivate", activateMotor),
         case("setspeed", function ()
             local num = tonumber(tInserts[2])
             if num ~= nil then
-                iMotorSpeed = num
-                setMotorSpeed()
+                setMotorSpeed(num)
             end
         end),
         default(function ()
-            setCursorToLog()
-            print("Unknown command")
-            setCursorToInput()
+            writeToLog("Unknown command")
         end)
     )
     -- bUpdateScreen = true
 end
 
 local function awaitSleep() sleep(10) end
+
+if motor.getSpeed() ~= 0 then
+    setSettingMotorSpeed(motor.getSpeed())
+end
 
 while true do
 

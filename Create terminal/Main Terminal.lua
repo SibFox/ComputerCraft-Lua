@@ -51,12 +51,12 @@ end
 ---@param layer number
 ---@param onInitFunc? function
 local function addOption(name, func, layer, onInitFunc)
-    if onInitFunc ~= nil then
-        onInitFunc()
-    end
     if layer < 0 then layer = 0 end
     tOptions[layer] = tOptions[layer] or {}
     tOptions[layer][#tOptions[layer]+1] = { name = name, func = func }
+    if onInitFunc ~= nil then
+        onInitFunc()
+    end
 end
 
 ---@param layer number
@@ -74,7 +74,7 @@ end
 ---@param spec string
 ---@param layer number
 local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
-    local payloadFunc = function()
+    local getStatePayload = function()
         local payload = {
             to = spec,
             task = { name = "getstate" }
@@ -90,7 +90,20 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
             end)
         )
     end
-    addOption(line.. " -> No connection", payloadFunc, layer, payloadFunc)
+
+    local sendStateChangePayload = function ()
+        getStatePayload()
+        local payload = {
+            to = spec,
+            task = { name = "stop" }
+        }
+        if string.find(tOptions[layer][iSelectedOption].name, "Disabled") then
+            payload.task = "reactivate"
+        end
+        rednet.broadcast(payload, payloadProtocol)
+    end
+
+    addOption(line.. " -> No connection", sendStateChangePayload, layer, getStatePayload)
 end
 
 -- Main terminal
