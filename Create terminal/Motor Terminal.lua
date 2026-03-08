@@ -78,7 +78,7 @@ local function setSettingMotorSpeed(speed)
         defineMotorSpeedSetting()
         settings.set(sSettingMotorSpeed, speed)
         settings.save(sSettingsPath)
-        print("[MH_NZI] Motor speed is set to '"..speed.."'")
+        -- print("[MH_NZI] Motor speed is set to '"..speed.."'")
         return true
     else
         printError("[MH_NZI] Motor speed should be a number")
@@ -94,7 +94,7 @@ local function establishHost()
             print("> Host specification is not defined")
             write("> Define specification: ")
             if not setSettingSpecification(io.read()) then
-                term_add.exit("Couldn't establish host! Exiting from program...")
+                term_add.exit("Couldn't establish host! Exiting from program...", true)
             end
         end
         rednet.host(connectionProtocol, connectionHost.."_"..specification)
@@ -108,6 +108,10 @@ local function setCursorToInput()
     for i = 9, x do
         term.setCursorPos(i, 10)
         write(" ")
+        term.setCursorPos(i-9, 11)
+        write(" ")
+    end
+    for i = x-9, x do
         term.setCursorPos(i, 11)
         write(" ")
     end
@@ -175,8 +179,8 @@ end
 
 ---@param comp_id? number
 local function activateMotor(comp_id)
-    -- writeToLog("Motor activated with speed ".. getSettingMotorSpeed())
-    setMotorSpeed(getSettingMotorSpeed())
+    writeToLog("Motor activated with speed ".. getSettingMotorSpeed())
+    motor.setSpeed(getSettingMotorSpeed())
     if comp_id ~= nil then
         rednet.send(comp_id, { task = { name = "activate" } }, connectionProtocol)
     end
