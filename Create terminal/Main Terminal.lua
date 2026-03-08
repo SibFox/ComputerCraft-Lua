@@ -83,7 +83,10 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
             task = { name = "getstate" }
         }
         rednet.broadcast(payload, payloadProtocol)
-        local _, answer = rednet.receive(payloadProtocol, 5)
+        local _, answer = rednet.receive(payloadProtocol, 2.5)
+        if answer == nil then
+            return false
+        end
         switch(answer,
             case(0, function () changeOptionName(layer, index, line.." -> Disabled") end),
             case("active", function () changeOptionName(layer, index, line.." -> Enabled") end ),
@@ -97,7 +100,9 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
     end
 
     local sendStateChangePayload = function ()
-        getStatePayload()
+        if getStatePayload() == false then
+            return
+        end
         local payload = {
             to = spec,
             task = { name = "stop" }
@@ -106,7 +111,7 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
             payload.task.name = "reactivate"
         end
         rednet.broadcast(payload, payloadProtocol)
-        local _, answer = rednet.receive(payloadProtocol, 5)
+        local _, answer = rednet.receive(payloadProtocol, 2.5)
         if answer ~= nil then
             switch(answer.task.name,
                 case("disable", function () changeOptionName(layer, index, line.." -> Disabled") end),
