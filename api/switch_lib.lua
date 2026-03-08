@@ -9,20 +9,22 @@ end
 function switch(n, ...)
   for _,v in ipairs {...} do
     if v[1] == n or v[1] == nil then
-      return v[2]()
+      return v[2](v[3])
     end
   end
 end
 
 ---@param n any
 ---@param f function
-function case(n,f)
-  return {n,f}
+---@param ...? any
+function case(n, f, ...)
+  return {n,f,...}
 end
 
 ---@param f function
-function default(f)
-  return {nil,f}
+---@param ...? any
+function default(f, ...)
+  return {nil,f,...}
 end
 
 return {

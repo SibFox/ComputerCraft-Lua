@@ -152,14 +152,23 @@ local function drawTerminal()
     setCursorToInput()
 end
 
-local function stopMotor()
+---@param comp_id? number
+local function stopMotor(comp_id)
     motor.stop()
     writeToLog("Motor stopped")
+    if comp_id ~= nil then
+        rednet.send(comp_id, { task = { name = "disable" } }, connectionProtocol)
+    end
 end
 
-local function activateMotor()
+---@param comp_id? number
+local function activateMotor(comp_id)
     motor.setSpeed(getSettingMotorSpeed())
     writeToLog("Motor activated with speed ".. getSettingMotorSpeed())
+    writeToLog("Motor stopped")
+    if comp_id ~= nil then
+        rednet.send(comp_id, { task = { name = "activate" } }, connectionProtocol)
+    end
 end
 
 ---@param speed number
@@ -181,8 +190,8 @@ local function catchPayload()
     until payload.to == getSpecification()
     writeToLog("Payload catched with name '".. payload.task.name .."' to '".. payload.to .."'")
     switch(payload.task.name,
-        case("stop", stopMotor),
-        case("reactivate", activateMotor),
+        case("stop", stopMotor, id),
+        case("reactivate", activateMotor, id),
         case("setspeed", function ()
             setMotorSpeed(payload.task.value)
         end),
