@@ -161,16 +161,6 @@ local function stopMotor(comp_id)
     end
 end
 
----@param comp_id? number
-local function activateMotor(comp_id)
-    motor.setSpeed(getSettingMotorSpeed())
-    writeToLog("Motor activated with speed ".. getSettingMotorSpeed())
-    writeToLog("Motor stopped")
-    if comp_id ~= nil then
-        rednet.send(comp_id, { task = { name = "activate" } }, connectionProtocol)
-    end
-end
-
 ---@param speed number
 local function setMotorSpeed(speed)
     motorSpeed = siblib.clamp(speed, -256, 256)
@@ -181,6 +171,15 @@ local function setMotorSpeed(speed)
     term.setCursorPos(12, 3)
     write(motorSpeed)
     writeToLog("Motor speed changed to ".. motorSpeed)
+end
+
+---@param comp_id? number
+local function activateMotor(comp_id)
+    setMotorSpeed(getSettingMotorSpeed())
+    writeToLog("Motor activated with speed ".. getSettingMotorSpeed())
+    if comp_id ~= nil then
+        rednet.send(comp_id, { task = { name = "activate" } }, connectionProtocol)
+    end
 end
 
 local function catchPayload()

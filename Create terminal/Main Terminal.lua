@@ -102,10 +102,12 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
         end
         rednet.broadcast(payload, payloadProtocol)
         local _, answer = rednet.receive(payloadProtocol, 5)
-        switch(answer.task.name,
-            case("disable", function () changeOptionName(layer, iSelectedOption, line.." -> Disabled") end),
-            case("activate", function () changeOptionName(layer, iSelectedOption, line.." -> Enabled") end )
-        )
+        if answer.task.name ~= nil then
+            switch(answer.task.name,
+                case("disable", function () changeOptionName(layer, iSelectedOption, line.." -> Disabled") end),
+                case("activate", function () changeOptionName(layer, iSelectedOption, line.." -> Enabled") end)
+            )
+        end
     end
 
     addOption(line.. " -> No connection", sendStateChangePayload, layer, getStatePayload)
