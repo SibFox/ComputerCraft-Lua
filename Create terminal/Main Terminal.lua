@@ -75,7 +75,8 @@ end
 ---@param line string
 ---@param spec string
 ---@param layer number
-local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
+---@param index number
+local function addOptionWithChangingNameOnPayload(module, line, spec, layer, index)
     local getStatePayload = function()
         local payload = {
             to = spec,
@@ -84,8 +85,8 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
         rednet.broadcast(payload, payloadProtocol)
         local _, answer = rednet.receive(payloadProtocol, 5)
         switch(answer,
-            case(0, function () changeOptionName(layer, iSelectedOption, line.." -> Disabled") end),
-            case("active", function () changeOptionName(layer, iSelectedOption, line.." -> Enabled") end ),
+            case(0, function () changeOptionName(layer, index, line.." -> Disabled") end),
+            case("active", function () changeOptionName(layer, index, line.." -> Enabled") end ),
             default(function ()
                 if bStartupPhase then
                     term_add.exit("Connection to ".. module .." ".. line .." motor is not established")
@@ -101,15 +102,15 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
             to = spec,
             task = { name = "stop" }
         }
-        if string.find(tOptions[layer][iSelectedOption].name, "Disabled") then
+        if string.find(tOptions[layer][index].name, "Disabled") then
             payload.task.name = "reactivate"
         end
         rednet.broadcast(payload, payloadProtocol)
         local _, answer = rednet.receive(payloadProtocol, 5)
         if answer ~= nil then
             switch(answer.task.name,
-                case("disable", function () changeOptionName(layer, iSelectedOption, line.." -> Disabled") end),
-                case("activate", function () changeOptionName(layer, iSelectedOption, line.." -> Enabled") end)
+                case("disable", function () changeOptionName(layer, index, line.." -> Disabled") end),
+                case("activate", function () changeOptionName(layer, index, line.." -> Enabled") end)
             )
         end
     end
@@ -159,9 +160,9 @@ addOption("Back", function ()
 end, 1)
 
 -- 1.1 - Overall module
-addOptionWithChangingNameOnPayload("Overall", "Main Line", "overall_main", 1.1)
-addOptionWithChangingNameOnPayload("Overall", "Generic Machines", "overall_generic", 1.1)
-addOptionWithChangingNameOnPayload("Overall", "Mechanical Crafter", "overall_crafter", 1.1)
+addOptionWithChangingNameOnPayload("Overall", "Main Line", "overall_main", 1.1, 1)
+addOptionWithChangingNameOnPayload("Overall", "Generic Machines", "overall_generic", 1.1, 2)
+addOptionWithChangingNameOnPayload("Overall", "Mechanical Crafter", "overall_crafter", 1.1, 3)
 
 addOption("Back", function ()
     iLayerDepth = 1
@@ -169,7 +170,7 @@ addOption("Back", function ()
 end, 1.1)
 
 -- 1.2 - Crushing module
-addOptionWithChangingNameOnPayload("Crushing", "Module", "crushing_main", 1.2)
+addOptionWithChangingNameOnPayload("Crushing", "Module", "crushing_main", 1.2, 1)
 
 addOption("Back", function ()
     iLayerDepth = 1
@@ -177,7 +178,7 @@ addOption("Back", function ()
 end, 1.2)
 
 -- 1.3 - Experience module
-addOptionWithChangingNameOnPayload("Experience", "Module", "experience_main", 1.3)
+addOptionWithChangingNameOnPayload("Experience", "Module", "experience_main", 1.3, 1)
 
 addOption("Back", function ()
     iLayerDepth = 1
@@ -207,7 +208,7 @@ local function drawMenu(title, layer)
         else
             write("  \t")
         end
-        
+
         local showFunc = tOptions[layer][i].showFunc
         if showFunc ~= nil and lastLayer ~= layer then
             showFunc()
