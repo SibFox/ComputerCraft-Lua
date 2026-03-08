@@ -7,6 +7,7 @@ local case = switch_lib.case
 local default = switch_lib.default
 
 local payloadProtocol = "nzi_p_minigoma_motor_setting"
+local bStartupPhase = true
 
 term_add.clearTerm()
 
@@ -86,8 +87,10 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
             case(0, function () changeOptionName(layer, iSelectedOption, line.." -> Disabled") end),
             case("active", function () changeOptionName(layer, iSelectedOption, line.." -> Enabled") end ),
             default(function ()
-                term_add.exit("Connection to ".. module .." ".. line .." motor is not established")
-                sleep(1)
+                if bStartupPhase then
+                    term_add.exit("Connection to ".. module .." ".. line .." motor is not established")
+                    sleep(1)
+                end
             end)
         )
     end
@@ -190,6 +193,7 @@ end, 2)
 
 
 -- Terminal section
+local lastLayer
 
 ---@param title string
 ---@param layer? number
@@ -203,13 +207,15 @@ local function drawMenu(title, layer)
         else
             write("  \t")
         end
+        
         local showFunc = tOptions[layer][i].showFunc
-        if showFunc ~= nil then
+        if showFunc ~= nil and lastLayer ~= layer then
             showFunc()
         end
         
         print(tOptions[layer][i].name)
     end
+    lastLayer = layer
     print("---- ["..string.rep("=", #title).."] ----")
 end
 
@@ -228,6 +234,8 @@ while true do
         )
         drawMenu(termName, iLayerDepth)
     end
+
+    bStartupPhase = false
 
     local sEvent, input = os.pullEvent("key")
     if sEvent == "key" then
