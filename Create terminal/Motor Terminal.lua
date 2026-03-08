@@ -161,7 +161,7 @@ local function writeSpeed(speed)
     motorSpeed = speed
     motor.setSpeed(motorSpeed)
     term.setCursorPos(12, 3)
-    write("    ")
+    write("       ")
     term.setCursorPos(12, 3)
     if motorSpeed == 0 then
         motorSpeed = "Stopped"
