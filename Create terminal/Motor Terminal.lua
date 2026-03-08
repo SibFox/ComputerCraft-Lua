@@ -175,8 +175,8 @@ end
 
 ---@param comp_id? number
 local function activateMotor(comp_id)
+    -- writeToLog("Motor activated with speed ".. getSettingMotorSpeed())
     setMotorSpeed(getSettingMotorSpeed())
-    writeToLog("Motor activated with speed ".. getSettingMotorSpeed())
     if comp_id ~= nil then
         rednet.send(comp_id, { task = { name = "activate" } }, connectionProtocol)
     end
@@ -224,9 +224,7 @@ local function awaitCommand()
         case("respecify", function ()
             x, _ = term.getSize()
             if string.len(tInserts[2]) > x - 20 then
-                setCursorToLog()
-                print("Specification name is too long")
-                setCursorToInput()
+                writeToLog("Specification name is too long")
                 return
             end
             rednet.unhost(connectionProtocol, connectionHost.."_"..getSpecification())

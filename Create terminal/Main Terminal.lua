@@ -50,10 +50,11 @@ end
 ---@param func function
 ---@param layer number
 ---@param onInitFunc? function
-local function addOption(name, func, layer, onInitFunc)
+---@param onShowFunc? function
+local function addOption(name, func, layer, onInitFunc, onShowFunc)
     if layer < 0 then layer = 0 end
     tOptions[layer] = tOptions[layer] or {}
-    tOptions[layer][#tOptions[layer]+1] = { name = name, func = func }
+    tOptions[layer][#tOptions[layer]+1] = { name = name, func = func, showFunc = onShowFunc }
     if onInitFunc ~= nil then
         onInitFunc()
     end
@@ -98,11 +99,11 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
             task = { name = "stop" }
         }
         if string.find(tOptions[layer][iSelectedOption].name, "Disabled") then
-            payload.task = "reactivate"
+            payload.task.name = "reactivate"
         end
         rednet.broadcast(payload, payloadProtocol)
         local _, answer = rednet.receive(payloadProtocol, 5)
-        if answer.task.name ~= nil then
+        if answer ~= nil then
             switch(answer.task.name,
                 case("disable", function () changeOptionName(layer, iSelectedOption, line.." -> Disabled") end),
                 case("activate", function () changeOptionName(layer, iSelectedOption, line.." -> Enabled") end)
@@ -110,7 +111,7 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer)
         end
     end
 
-    addOption(line.. " -> No connection", sendStateChangePayload, layer, getStatePayload)
+    addOption(line.. " -> No connection", sendStateChangePayload, layer, getStatePayload, getStatePayload)
 end
 
 -- Main terminal
@@ -202,6 +203,7 @@ local function drawMenu(title, layer)
         else
             write("  \t")
         end
+        tOptions[layer][i].showFunc()
         print(tOptions[layer][i].name)
     end
     print("---- ["..string.rep("=", #title).."] ----")
