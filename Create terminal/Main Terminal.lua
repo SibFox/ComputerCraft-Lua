@@ -1,10 +1,9 @@
 -- Code by SibFox
 
 local term_add = require("terminal_additions")
-local table_add = require("table_additions")
-local str_format = require("formatable_string_lib")
-local defString = str_format.defString
-local setColor = str_format.setColor
+-- local str_format = require("formatable_string_lib")
+-- local defString = str_format.defString
+-- local setColor = str_format.setColor
 local switch_lib = require("switch_lib")
 local switch = switch_lib.switch
 local case = switch_lib.case
@@ -92,19 +91,21 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
             return false
         end
         switch(answer,
-            case(0, function () changeOptionName(layer, index,
-                    str_format.create(
-                        defString(line, false),
-                        defString(" -> ", false),
-                        setColor(defString("Disabled"), colors.yellow)
-                    ))
+            case(0, function () changeOptionName(layer, index, line .."-> Disabled"
+                    -- str_format.create(
+                    --     defString(line, false),
+                    --     defString(" -> ", false),
+                    --     setColor(defString("Disabled"), colors.yellow)
+                    -- )
+                    )
                 end),
-            case("active", function () changeOptionName(layer, index,
-                    str_format.create(
-                        defString(line, false),
-                        defString(" -> ", false),
-                        setColor(defString("Enabled"), colors.lime)
-                    ))
+            case("active", function () changeOptionName(layer, index, line .."-> Enabled"
+                    -- str_format.create(
+                    --     defString(line, false),
+                    --     defString(" -> ", false),
+                    --     setColor(defString("Enabled"), colors.lime)
+                    -- )
+                    )
                 end),
             default(function ()
                 if bStartupPhase then
@@ -136,29 +137,32 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
         local _, answer = rednet.receive(payloadProtocol, 2.5)
         if answer ~= nil then
             switch(answer.task.name,
-                case("disable", function () changeOptionName(layer, index,
-                    str_format.create(
-                        defString(line, false),
-                        defString(" -> ", false),
-                        setColor(defString("Disabled"), colors.yellow)
-                    ))
+                case("disable", function () changeOptionName(layer, index, line .."-> Disabled"
+                    -- str_format.create(
+                    --     defString(line, false),
+                    --     defString(" -> ", false),
+                    --     setColor(defString("Disabled"), colors.yellow)
+                    -- )
+                    )
                 end),
-                case("activate", function () changeOptionName(layer, index,
-                    str_format.create(
-                        defString(line, false),
-                        defString(" -> ", false),
-                        setColor(defString("Enabled"), colors.lime)
-                    ))
+                case("activate", function () changeOptionName(layer, index, line .."-> Enabled"
+                    -- str_format.create(
+                    --     defString(line, false),
+                    --     defString(" -> ", false),
+                    --     setColor(defString("Enabled"), colors.lime)
+                    -- )
+                    )
                 end)
             )
         end
     end
 
-    addOption(str_format.create(
-                defString(line, false),
-                defString(" -> ", false),
-                setColor(defString("No connection"), colors.red)
-            ), sendStateChangePayload, layer, getStatePayload)
+    addOption(line .." -> No connection",
+    -- str_format.create(
+    --             defString(line, false),
+    --             defString(" -> ", false),
+    --             setColor(defString("No connection"), colors.red))
+            sendStateChangePayload, layer, getStatePayload)
 end
 
 -- Main terminal
@@ -280,8 +284,6 @@ while bContinueWork do
         )
         drawMenu(termName, iLayerDepth)
     end
-
-    table_add.printTable(tOptions[1.3][1].name)
     
     parallel.waitForAny(
         function ()
