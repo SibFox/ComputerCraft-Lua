@@ -257,6 +257,7 @@ local function drawMenu(title, layer)
 end
 
 bContinueWork = true
+bStartupPhase = false
 while bContinueWork do
 
     if bUpdateMonitor then
@@ -272,9 +273,7 @@ while bContinueWork do
         )
         drawMenu(termName, iLayerDepth)
     end
-
-    bStartupPhase = false
-
+    
     -- os.pullEvent("mouse_scroll")
     -- local sEvent, input = os.pullEvent("key")
     -- if sEvent == "key" then
@@ -305,7 +304,7 @@ while bContinueWork do
                 selectionDown()
             end
             if input == 257 then -- Enter
-                selectionDown()
+                bContinueWork = not makeSelection()
             end
         end,
         function ()
@@ -314,13 +313,13 @@ while bContinueWork do
                 selectionUp()
             end
             if dir == 1 then -- Down
-                bContinueWork = makeSelection()
+                selectionDown()
             end
         end,
         function ()
             local _, button = os.pullEvent("mouse_click")
             if button == 1 then
-                bContinueWork = makeSelection()
+                bContinueWork = not makeSelection()
             end
         end
     )
