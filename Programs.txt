@@ -9,6 +9,7 @@
             {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Create%20terminal/Main%20Terminal.lua", name = "main_terminal.lua", type = "program"},
             {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/switch_lib.lua", name = "switch_lib.lua", type = "api"},
             {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/terminal_additions.lua", name = "terminal_additions.lua", type = "api"},
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/formatable_string_lib.lua", name = "formatable_string_lib.lua", type = "api"},
         },
         needs = {
             

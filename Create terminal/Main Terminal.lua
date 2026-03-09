@@ -1,6 +1,9 @@
 -- Code by SibFox
 
 local term_add = require("terminal_additions")
+local str_format = require("formatable_string_lib")
+local defString = str_format.defString
+local setColor = str_format.setColor
 local switch_lib = require("switch_lib")
 local switch = switch_lib.switch
 local case = switch_lib.case
@@ -52,7 +55,7 @@ end
 ---@param layer number
 ---@param onInitFunc? function
 ---@param onShowFunc? function
-local function addOption(name, func, layer, onInitFunc, onShowFunc)
+local function addOption(name, func, layer, onShowFunc, onInitFunc)
     if layer < 0 then layer = 0 end
     tOptions[layer] = tOptions[layer] or {}
     tOptions[layer][#tOptions[layer]+1] = { name = name, func = func, showFunc = onShowFunc }
@@ -63,7 +66,7 @@ end
 
 ---@param layer number
 ---@param index number
----@param to string
+---@param to string|table
 local function changeOptionName(layer, index, to)
     local from = tOptions[layer][index]
     if from ~= nil then
@@ -88,8 +91,20 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
             return false
         end
         switch(answer,
-            case(0, function () changeOptionName(layer, index, line.." -> Disabled") end),
-            case("active", function () changeOptionName(layer, index, line.." -> Enabled") end ),
+            case(0, function () changeOptionName(layer, index,
+                    str_format.create(
+                        defString(line, false),
+                        defString(" -> ", false),
+                        setColor(defString("Disabled"), colors.yellow)
+                    ))
+                end),
+            case("active", function () changeOptionName(layer, index,
+                    str_format.create(
+                        defString(line, false),
+                        defString(" -> ", false),
+                        setColor(defString("Enabled"), colors.lime)
+                    ))
+                end),
             default(function ()
                 if bStartupPhase then
                     term_add.exit("Connection to ".. module .." ".. line .." motor is not established")
@@ -114,26 +129,40 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
         local _, answer = rednet.receive(payloadProtocol, 2.5)
         if answer ~= nil then
             switch(answer.task.name,
-                case("disable", function () changeOptionName(layer, index, line.." -> Disabled") end),
-                case("activate", function () changeOptionName(layer, index, line.." -> Enabled") end)
+                case("disable", function () changeOptionName(layer, index,
+                    str_format.create(
+                        defString(line, false),
+                        defString(" -> ", false),
+                        setColor(defString("Disabled"), colors.yellow)
+                    ))
+                end),
+                case("activate", function () changeOptionName(layer, index,
+                    str_format.create(
+                        defString(line, false),
+                        defString(" -> ", false),
+                        setColor(defString("Enabled"), colors.lime)
+                    ))
+                end)
             )
         end
     end
 
-    addOption(line.. " -> No connection", sendStateChangePayload, layer, getStatePayload, getStatePayload)
+    addOption(str_format.create(
+                defString(line, false),
+                defString(" -> ", false),
+                setColor(defString("No connection"), colors.red)
+            ), sendStateChangePayload, layer, getStatePayload)
 end
 
 -- Main terminal
 addOption("Room modules control", function ()
     iLayerDepth = 1
     iSelectedOption = 1
-    print("Room modules selected")
 end, 0)
 
 addOption("Elevator contorls", function ()
     iLayerDepth = 2
     iSelectedOption = 1
-    print("Elevator controls selected")
 end, 0)
 
 addOption("Exit", function ()
@@ -144,19 +173,16 @@ end, 0)
 addOption("Overall module", function ()
     iLayerDepth = 1.1
     iSelectedOption = 1
-    print("Overall room selected")
 end, 1)
 
 addOption("Crushing module", function ()
     iLayerDepth = 1.2
     iSelectedOption = 1
-    print("Crushing room selected")
 end, 1)
 
 addOption("Experience module", function ()
     iLayerDepth = 1.3
     iSelectedOption = 1
-    print("Experience room selected")
 end, 1)
 
 addOption("Back", function ()
@@ -219,13 +245,19 @@ local function drawMenu(title, layer)
             showFunc()
         end
         
-        print(tOptions[layer][i].name)
+        local name = tOptions[layer][i].name
+        if str_format.isStrFormatable(name) then
+           str_format.build(name)
+        else
+            print(name)
+        end
     end
     lastLayer = layer
     print("---- ["..string.rep("=", #title).."] ----")
 end
 
-while true do
+bContinueWork = true
+while bContinueWork do
 
     if bUpdateMonitor then
         bUpdateMonitor = false
@@ -243,23 +275,57 @@ while true do
 
     bStartupPhase = false
 
-    local sEvent, input = os.pullEvent("key")
-    if sEvent == "key" then
-        if input == 265 then -- Arrow up
-            selectionUp()
-            bUpdateMonitor = true
-        end
-        if input == 264 then -- Arrow down
-            selectionDown()
-            bUpdateMonitor = true
-        end
-        if input == 257 then -- Enter
-            if makeSelection() then
-                term_add.clearTerm()
-                break
-            end
-            bUpdateMonitor = true
-        end
-    end
+    -- os.pullEvent("mouse_scroll")
+    -- local sEvent, input = os.pullEvent("key")
+    -- if sEvent == "key" then
+    --     if input == 265 then -- Arrow up
+    --         selectionUp()
+    --         bUpdateMonitor = true
+    --     end
+    --     if input == 264 then -- Arrow down
+    --         selectionDown()
+    --         bUpdateMonitor = true
+    --     end
+    --     if input == 257 then -- Enter
+    --         if makeSelection() then
+    --             term_add.clearTerm()
+    --             break
+    --         end
+    --         bUpdateMonitor = true
+    --     end
+    -- end
 
+    parallel.waitForAny(
+        function ()
+            local _, input = os.pullEvent("key")
+            if input == 265 then -- Arrow up
+                selectionUp()
+            end
+            if input == 264 then -- Arrow down
+                selectionDown()
+            end
+            if input == 257 then -- Enter
+                selectionDown()
+            end
+        end,
+        function ()
+            local _, dir = os.pullEvent("mouse_scroll")
+            if dir == -1 then -- Up
+                selectionUp()
+            end
+            if dir == 1 then -- Down
+                bContinueWork = makeSelection()
+            end
+        end,
+        function ()
+            local _, button = os.pullEvent("mouse_click")
+            if button == 1 then
+                bContinueWork = makeSelection()
+            end
+        end
+    )
+
+    bUpdateMonitor = true
 end
+
+term_add.clearTerm()
