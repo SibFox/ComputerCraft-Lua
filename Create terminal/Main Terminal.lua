@@ -125,14 +125,14 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
             task = { name = "stop" }
         }
         local name = tOptions[layer][index].name
-        if str_format.isStrFormatable(name) then
-            if str_format.find(name, "Disabled") then
+        -- if str_format.isStrFormatable(name) then
+        --     if str_format.find(name, "Disabled") then
+        --         payload.task.name = "reactivate"
+        --     end
+        if string.find(name, "Disabled") then
                 payload.task.name = "reactivate"
             end
-        else if string.find(name, "Disabled") then
-                payload.task.name = "reactivate"
-            end
-        end
+        -- end
         rednet.broadcast(payload, payloadProtocol)
         local _, answer = rednet.receive(payloadProtocol, 2.5)
         if answer ~= nil then
@@ -257,11 +257,11 @@ local function drawMenu(title, layer)
         end
         
         local name = tOptions[layer][i].name
-        if str_format.isStrFormatable(name) then
-           str_format.build(name)
-        else
+        -- if str_format.isStrFormatable(name) then
+        --    str_format.build(name)
+        -- else
             print(name)
-        end
+        -- end
     end
     lastLayer = layer
     print("---- ["..string.rep("=", #title).."] ----")
