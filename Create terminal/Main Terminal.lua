@@ -51,7 +51,7 @@ end
 
 ----- Build options section
 
----@param name string
+---@param name string|table
 ---@param func function
 ---@param layer number
 ---@param onInitFunc? function
@@ -123,8 +123,14 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
             to = spec,
             task = { name = "stop" }
         }
-        if string.find(tOptions[layer][index].name, "Disabled") then
-            payload.task.name = "reactivate"
+        local name = tOptions[layer][index].name
+        if str_format.isStrFormatable(name) then
+            if str_format.find(name, "Disabled") then
+                payload.task.name = "reactivate"
+            end
+        else if string.find(name, "Disabled") then
+                payload.task.name = "reactivate"
+            end
         end
         rednet.broadcast(payload, payloadProtocol)
         local _, answer = rednet.receive(payloadProtocol, 2.5)
@@ -154,7 +160,7 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
                 setColor(defString("No connection"), colors.red)
             ), sendStateChangePayload, layer, 
             function ()
-                table_add.printTable(tOptions[layer][index])
+                table_add.printTable(tOptions[layer][index].name)
             end
         )
             --getStatePayload)

@@ -15,19 +15,19 @@ function build(collection)
       end
     end
   end
-  term.setTextColor(color.white)
+  term.setTextColor(colors.white)
 end
 
 ---@param ... table
 function create(...)
-  local collection
+  local tCollection = {}
   for _, v in ipairs(...) do
     if isStrFormatable(v) then
-      table.insert(collection, v)
+      table.insert(tCollection, v)
     end
   end
-  collection.formatable = true
-  return collection
+  tCollection.formatable = true
+  return tCollection
 end
 
 ---@param str string
@@ -48,13 +48,29 @@ function setColor(fstr, c)
   return fstr
 end
 
+---@param fCollection table
+---@param str string
+local function find(fCollection, str)
+  if fCollection ~= nil then
+    for i, v in pairs(fCollection) do
+      if v ~= nil then
+        if v.text == str then
+          return true, i
+        end
+      end
+    end
+  end
+  return false
+end
+
 ---@param tStr table
 function isStrFormatable(tStr)
   if tStr ~= nil then
     return tStr.formatable
   end
+  return false
 end
 
 return {
-  info = info, create = create, build = build, defString = defString, setColor = setColor, isStrFormatable = isStrFormatable
+  info = info, create = create, build = build, defString = defString, setColor = setColor, isStrFormatable = isStrFormatable, find = find
 }
