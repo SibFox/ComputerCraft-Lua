@@ -88,8 +88,8 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
             return false
         end
         switch(answer,
-            case(0, function () changeOptionName(layer, index, line .."-> Disabled") end),
-            case("active", function () changeOptionName(layer, index, line .."-> Enabled") end),
+            case(0, function () changeOptionName(layer, index, line .." -> Disabled") end),
+            case("active", function () changeOptionName(layer, index, line .." -> Enabled") end),
             default(function ()
                 if bStartupPhase then
                     term_add.exit("Connection to ".. module .." ".. line .." motor is not established")
@@ -115,8 +115,8 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
         local _, answer = rednet.receive(payloadProtocol, 2.5)
         if answer ~= nil then
             switch(answer.task.name,
-                case("disable", function () changeOptionName(layer, index, line .."-> Disabled") end),
-                case("activate", function () changeOptionName(layer, index, line .."-> Enabled") end)
+                case("disable", function () changeOptionName(layer, index, line .." -> Disabled") end),
+                case("activate", function () changeOptionName(layer, index, line .." -> Enabled") end)
             )
         end
     end
