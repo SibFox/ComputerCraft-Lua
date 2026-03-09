@@ -1,9 +1,6 @@
 -- Code by SibFox
 
 local term_add = require("terminal_additions")
--- local str_format = require("formatable_string_lib")
--- local defString = str_format.defString
--- local setColor = str_format.setColor
 local switch_lib = require("switch_lib")
 local switch = switch_lib.switch
 local case = switch_lib.case
@@ -91,22 +88,8 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
             return false
         end
         switch(answer,
-            case(0, function () changeOptionName(layer, index, line .."-> Disabled"
-                    -- str_format.create(
-                    --     defString(line, false),
-                    --     defString(" -> ", false),
-                    --     setColor(defString("Disabled"), colors.yellow)
-                    -- )
-                    )
-                end),
-            case("active", function () changeOptionName(layer, index, line .."-> Enabled"
-                    -- str_format.create(
-                    --     defString(line, false),
-                    --     defString(" -> ", false),
-                    --     setColor(defString("Enabled"), colors.lime)
-                    -- )
-                    )
-                end),
+            case(0, function () changeOptionName(layer, index, line .."-> Disabled") end),
+            case("active", function () changeOptionName(layer, index, line .."-> Enabled") end),
             default(function ()
                 if bStartupPhase then
                     term_add.exit("Connection to ".. module .." ".. line .." motor is not established")
@@ -125,44 +108,20 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
             task = { name = "stop" }
         }
         local name = tOptions[layer][index].name
-        -- if str_format.isStrFormatable(name) then
-        --     if str_format.find(name, "Disabled") then
-        --         payload.task.name = "reactivate"
-        --     end
         if string.find(name, "Disabled") then
-                payload.task.name = "reactivate"
-            end
-        -- end
+            payload.task.name = "reactivate"
+        end
         rednet.broadcast(payload, payloadProtocol)
         local _, answer = rednet.receive(payloadProtocol, 2.5)
         if answer ~= nil then
             switch(answer.task.name,
-                case("disable", function () changeOptionName(layer, index, line .."-> Disabled"
-                    -- str_format.create(
-                    --     defString(line, false),
-                    --     defString(" -> ", false),
-                    --     setColor(defString("Disabled"), colors.yellow)
-                    -- )
-                    )
-                end),
-                case("activate", function () changeOptionName(layer, index, line .."-> Enabled"
-                    -- str_format.create(
-                    --     defString(line, false),
-                    --     defString(" -> ", false),
-                    --     setColor(defString("Enabled"), colors.lime)
-                    -- )
-                    )
-                end)
+                case("disable", function () changeOptionName(layer, index, line .."-> Disabled") end),
+                case("activate", function () changeOptionName(layer, index, line .."-> Enabled") end)
             )
         end
     end
 
-    addOption(line .." -> No connection",
-    -- str_format.create(
-    --             defString(line, false),
-    --             defString(" -> ", false),
-    --             setColor(defString("No connection"), colors.red))
-            sendStateChangePayload, layer, getStatePayload)
+    addOption(line .." -> No connection", sendStateChangePayload, layer, getStatePayload)
 end
 
 -- Main terminal
@@ -257,11 +216,7 @@ local function drawMenu(title, layer)
         end
         
         local name = tOptions[layer][i].name
-        -- if str_format.isStrFormatable(name) then
-        --    str_format.build(name)
-        -- else
-            print(name)
-        -- end
+        print(name)
     end
     lastLayer = layer
     print("---- ["..string.rep("=", #title).."] ----")
