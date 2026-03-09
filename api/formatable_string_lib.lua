@@ -49,7 +49,9 @@ end
 
 ---@param tStr table
 function isStrFormatable(tStr)
-  return tStr.formatable
+  if tStr ~= nil then
+    return tStr.formatable
+  end
 end
 
 return {
