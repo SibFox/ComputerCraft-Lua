@@ -4,9 +4,9 @@ local function info()
     print("i> Formatable string module")
 end
 
----@param ... table
-function build(...)
-  for _, v in ipairs(...) do
+---@param collection table
+function build(collection)
+  for _, v in ipairs(collection) do
     if isStrFormatable(v) then
       term.setTextColor(v.color)
       write(v.text)
@@ -26,6 +26,7 @@ function create(...)
       table.insert(collection, v)
     end
   end
+  collection.formatable = true
   return collection
 end
 

@@ -1,6 +1,7 @@
 -- Code by SibFox
 
 local term_add = require("terminal_additions")
+local table_add = require("table_additions")
 local str_format = require("formatable_string_lib")
 local defString = str_format.defString
 local setColor = str_format.setColor
@@ -151,7 +152,12 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
                 defString(line, false),
                 defString(" -> ", false),
                 setColor(defString("No connection"), colors.red)
-            ), sendStateChangePayload, layer, getStatePayload)
+            ), sendStateChangePayload, layer, 
+            function ()
+                table_add.printTable(tOptions[layer][index])
+            end
+        )
+            --getStatePayload)
 end
 
 -- Main terminal
@@ -274,26 +280,6 @@ while bContinueWork do
         drawMenu(termName, iLayerDepth)
     end
     
-    -- os.pullEvent("mouse_scroll")
-    -- local sEvent, input = os.pullEvent("key")
-    -- if sEvent == "key" then
-    --     if input == 265 then -- Arrow up
-    --         selectionUp()
-    --         bUpdateMonitor = true
-    --     end
-    --     if input == 264 then -- Arrow down
-    --         selectionDown()
-    --         bUpdateMonitor = true
-    --     end
-    --     if input == 257 then -- Enter
-    --         if makeSelection() then
-    --             term_add.clearTerm()
-    --             break
-    --         end
-    --         bUpdateMonitor = true
-    --     end
-    -- end
-
     parallel.waitForAny(
         function ()
             local _, input = os.pullEvent("key")
