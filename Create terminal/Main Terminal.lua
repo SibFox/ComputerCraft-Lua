@@ -158,12 +158,7 @@ local function addOptionWithChangingNameOnPayload(module, line, spec, layer, ind
                 defString(line, false),
                 defString(" -> ", false),
                 setColor(defString("No connection"), colors.red)
-            ), sendStateChangePayload, layer, 
-            function ()
-                table_add.printTable(tOptions[layer][index].name)
-            end
-        )
-            --getStatePayload)
+            ), sendStateChangePayload, layer, getStatePayload)
 end
 
 -- Main terminal
@@ -285,6 +280,8 @@ while bContinueWork do
         )
         drawMenu(termName, iLayerDepth)
     end
+
+    table_add.printTable(tOptions[1.3][1].name)
     
     parallel.waitForAny(
         function ()

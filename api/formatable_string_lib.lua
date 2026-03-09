@@ -53,7 +53,7 @@ end
 local function find(fCollection, str)
   if fCollection ~= nil then
     for i, v in pairs(fCollection) do
-      if v ~= nil then
+      if v ~= nil and type(v) ~= "boolean" then
         if v.text == str then
           return true, i
         end
