@@ -1,5 +1,5 @@
 local function info()
-    print("i> Provided by Nezer Inc.")
+    print("i> Provided by Native Zeal Co.")
     print("i> Made by SibFox")
     print("i> Switch module")
 end

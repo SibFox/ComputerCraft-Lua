@@ -76,5 +76,22 @@
         needs = {
             modem = true
         }
+    },
+
+    crash_pod_tech = {
+        name = "Starting Crash Pod for Sugoma:Tech",
+        desc = "Starting Crash Pod for Sugoma:Tech",
+        path = "rom/nzs_cover",
+        version = "1.0.0",
+        startup = "shell.run('rom/nzs_cover/speakers.lua')",
+        files = {
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Crash%20Pod%20Terminal/Crash%20Pod%20Speakers.lua", name = "speakers.lua", type = "program"},
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/Crash%20Pod%20Terminal/Crash%20Pod%20Extra%20Terminal.lua", name = "exterminal.lua", type = "program"},
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/terminal_additions.lua", name = "terminal_additions.lua", type = "api"},
+            {link="https://raw.githubusercontent.com/SibFox/ComputerCraft-Lua/refs/heads/main/api/set_lua.lua", name = "set_lua.lua", type = "api"},
+        },
+        needs = {
+            modem = true
+        }
     }
 }

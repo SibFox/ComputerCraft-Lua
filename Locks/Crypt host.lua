@@ -2,7 +2,7 @@ local term_add = require("terminal_additions")
 
 local args = { ... }
 
-local connectionProtocol, connectionHost = "nziA_p_door_crypt", "nziA_h_door_crypt_A"
+local connectionProtocol, connectionHost = "nzsA_p_door_crypt", "nzsA_h_door_crypt_A"
 local specification = "door_test"
 local password = "door"
 

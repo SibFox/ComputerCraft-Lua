@@ -1,15 +1,15 @@
 local term_add = require("terminal_additions")
 
 local version = "A.1"
-local connectionProtocol, connectionHost = "nziA_p_door_crypt", "nziA_h_door_crypt_A"
+local connectionProtocol, connectionHost = "nzsA_p_door_crypt", "nzsA_h_door_crypt_A"
 local specification = "door_test"
 local localID = os.getComputerID()
 local hostID = nil
-local termiantionPass = "nzi_sf_jk_trpss"
+local termiantionPass = "nzs_sf_jk_trpss"
 
 local function defineVersion()
-    if type(settings.get("nzi_pd_startup_version")) == nil then
-        settings.define("nzi_pd_startup_version", {
+    if type(settings.get("nzs_pd_startup_version")) == nil then
+        settings.define("nzs_pd_startup_version", {
             description = "",
             default = version,
             type = "string"

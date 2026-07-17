@@ -1,5 +1,5 @@
 local function info()
-    print("i> Provided by Nezer Inc.")
+    print("i> Provided by Native Zeal Co.")
     print("i> Made by SibFox")
     print("i> Overall module")
 end
@@ -7,9 +7,7 @@ end
 ---@param inputstr string|number
 ---@param sep? string|number
 function splitstr(inputstr, sep)
-  if sep == nil then
-    sep = "%s"
-  end
+  sep = sep or "%s"
   local t = {}
   for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
     table.insert(t, str)

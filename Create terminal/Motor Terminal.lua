@@ -7,10 +7,10 @@ local switch = switch_lib.switch
 local case = switch_lib.case
 local default = switch_lib.default
 
-local connectionProtocol, connectionHost = "nzi_p_minigoma_motor_setting", "nzi_h_minigoma_motor_setting"
-local sSettingSpecification = "nzi_mh_specification"
-local sSettingMotorSpeed = "nzi_mh_motor_speed"
-local sSettingsPath = "nzi/mh/settings.nzi"
+local connectionProtocol, connectionHost = "nzs_p_minigoma_motor_setting", "nzs_h_minigoma_motor_setting"
+local sSettingSpecification = "nzs_mh_specification"
+local sSettingMotorSpeed = "nzs_mh_motor_speed"
+local sSettingsPath = "nzs/mh/settings.nzs"
 
 local bUnhosted = true
 local bUpdateScreen = true
@@ -43,7 +43,7 @@ local function defineSpecificationSetting()
             default = "",
             type = "string"
         })
-        print("[MH_NZI] Specification setting defined")
+        print("[MH_NZS] Specification setting defined")
     end
 end
 
@@ -54,7 +54,7 @@ local function defineMotorSpeedSetting()
             default = "",
             type = "number"
         })
-        print("[MH_NZI] Motor speed setting defined")
+        print("[MH_NZS] Motor speed setting defined")
     end
 end
 
@@ -64,10 +64,10 @@ local function setSettingSpecification(spec)
         defineSpecificationSetting()
         settings.set(sSettingSpecification, spec)
         settings.save(sSettingsPath)
-        print("[MH_NZI] Host specification is set to '"..spec.."'")
+        print("[MH_NZS] Host specification is set to '"..spec.."'")
         return true
     else
-        printError("[MH_NZI] Specification should be a string")
+        printError("[MH_NZS] Specification should be a string")
         return false
     end
 end
@@ -78,10 +78,10 @@ local function setSettingMotorSpeed(speed)
         defineMotorSpeedSetting()
         settings.set(sSettingMotorSpeed, speed)
         settings.save(sSettingsPath)
-        -- print("[MH_NZI] Motor speed is set to '"..speed.."'")
+        -- print("[MH_NZS] Motor speed is set to '"..speed.."'")
         return true
     else
-        printError("[MH_NZI] Motor speed should be a number")
+        printError("[MH_NZS] Motor speed should be a number")
         return false
     end
 end
@@ -173,7 +173,9 @@ end
 local function setMotorSpeed(speed)
     speed = siblib.clamp(speed, -256, 256)
     writeSpeed(speed)
-    setSettingMotorSpeed(speed)
+    if speed ~= 0 then
+        setSettingMotorSpeed(speed)
+    end
     writeToLog("Motor speed changed to ".. speed)
 end
 

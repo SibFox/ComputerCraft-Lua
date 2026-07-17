@@ -6,7 +6,7 @@ local switch = switch_lib.switch
 local case = switch_lib.case
 local default = switch_lib.default
 
-local payloadProtocol = "nzi_p_minigoma_motor_setting"
+local payloadProtocol = "nzs_p_minigoma_motor_setting"
 local bStartupPhase = true
 
 term_add.clearTerm()

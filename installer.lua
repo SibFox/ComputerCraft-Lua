@@ -51,13 +51,15 @@ function install(program)
     end
     
     libraries = {}
+    programs = {}
     
-    programName = ""
-    programPath = ""
+    -- programName = ""
+    -- programPath = ""
     for _, v in ipairs(programs[program]["files"]) do
         if v.type == "program" then
-           programPath = v.link
-           programName = v.name
+            table.insert(programs, v)
+        --    programPath = v.link
+        --    programName = v.name
         elseif v.type == "api" then
             table.insert(libraries, v)
         end
@@ -74,10 +76,21 @@ function install(program)
     end
     
     term.setTextColor(colors.yellow)
-    print("Downloading program ".. program .."...")
-    shell.run("wget ".. programPath .." ".. program .."/".. programName)
-    term.setTextColor(colors.lime)
-    print("Successfully installed ".. program)
+    print("Downloading program ".. v.name .."...")
+    for _, v in ipairs(programs) do
+        if fs.exists(programs[program]["path"].."/".. v.name) then
+            print("Program ".. v.name .." is already present")
+        else
+            shell.run("wget ".. v.link .." ".. programs[program]["path"] .."/".. v.name)
+            term.setTextColor(colors.lime)
+            print("Successfully installed ".. program)
+        end
+    end
+    -- term.setTextColor(colors.yellow)
+    -- print("Downloading program ".. program .."...")
+    -- shell.run("wget ".. programPath .." ".. program .."/".. programName)
+    -- term.setTextColor(colors.lime)
+    -- print("Successfully installed ".. program)
 end
 
 function update(program)
