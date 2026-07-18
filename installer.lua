@@ -51,33 +51,33 @@ function install(program)
     end
     
     libraries = {}
-    programs = {}
+    internalPrograms = {}
     
     -- programName = ""
     -- programPath = ""
     for _, v in ipairs(programs[program]["files"]) do
         if v.type == "program" then
-            table.insert(programs, v)
+            table.insert(internalPrograms, v)
         --    programPath = v.link
         --    programName = v.name
         elseif v.type == "api" then
             table.insert(libraries, v)
         end
     end
-    
+
     for _, v in ipairs(libraries) do
         term.setTextColor(colors.yellow)
         print("Downloading library ".. v.name .."...")
         if fs.exists("/rom/modules/main/".. v.name) then
             print("Library ".. v.name .." is already present")
         else
-            shell.run("wget ".. v.link .." ".. program .."/".. v.name)
+            shell.run("wget ".. v.link .." ".. programs[program]["path"] .."/".. v.name)
         end
     end
-    
-    term.setTextColor(colors.yellow)
-    print("Downloading program ".. v.name .."...")
-    for _, v in ipairs(programs) do
+
+    for _, v in ipairs(internalPrograms) do
+        term.setTextColor(colors.yellow)
+        print("Downloading program ".. v.name .."...")
         if fs.exists(programs[program]["path"].."/".. v.name) then
             print("Program ".. v.name .." is already present")
         else
