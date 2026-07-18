@@ -15,6 +15,13 @@ while true do
     repeat
         id, payload = rednet.receive(payloadProtocol)
     until payloadSecret == payload.secret
-    print("Gifting items to "..payload.nickname)
-    commands.give(payload.nickname.." minecraft:stone_axe[damage="..math.random(80, 100).."]")
+    if payload["nickname"] ~= nil then
+        print("Gifting items to "..payload.nickname)
+        commands.give(payload.nickname.." minecraft:stone_axe[damage="..math.random(80, 100).."]")
+    elseif payload.shutdown then
+        commands.exec("setblock -234 72 33 minecraft:air")
+        commands.exec("setblock -234 61 35 minecraft:air")
+        sleep(1)
+        os.shutdown()
+    end
 end

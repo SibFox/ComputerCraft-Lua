@@ -19,6 +19,8 @@ end
 
 local pd = peripheral.find("player_detector")
 
+settings.load("adm/sdpl/settings.adm")
+
 local function getGiftedPlayersSetting() return settings.get("adm_sdpl_giftedplayers", nil) end
 local function getEnergySetting() return settings.get("adm_sdpl_energy", nil) end
 
@@ -29,7 +31,7 @@ local function defineGiftedPlayersSetting()
             default = Set.new({}),
             type = "table"
         })
-        print("[ADM] Gifted players setting defined")
+        -- print("[ADM] Gifted players setting defined")
     end
 end
 
@@ -37,19 +39,17 @@ local function defineEnergySetting()
     if getEnergySetting() == nil then
         settings.define("adm_sdpl_energy", {
             description = "Energy",
-            default = 86400,
+            default = 86400, -- 24h
             type = "number"
         })
-        print("[ADM] Energy setting defined")
+        -- print("[ADM] Energy setting defined")
     end
 end
 
-local function setEnergySetting(en)
-    if type(en) == "number" then
-        defineEnergySetting()
-        settings.set("adm_sdpl_energy", en)
-        settings.save("rom/adm/sdpl/settings.adm")
-    end
+local function decrementEnergySetting(int)
+    defineEnergySetting()
+    settings.set("adm_sdpl_energy", getEnergySetting()-int)
+    settings.save("adm/sdpl/settings.adm")
 end
 
 ---@param player string
@@ -58,40 +58,41 @@ local function addToSettingGiftedPlayers(player)
         defineGiftedPlayersSetting()
 
         setGP = getGiftedPlayersSetting()
-        Set.print(setGP)
         if Set.contains(setGP, player) then
             return false
         end
 
         Set.add(setGP, player)
         settings.set("adm_sdpl_giftedplayers", setGP)
-        settings.save("rom/adm/sdpl/settings.adm")
+        settings.save("adm/sdpl/settings.adm")
         -- print("[ADM] Host specification is set to '"..spec.."'")
         return true
     else
-        printError("[ADM] Player should be a string")
+        -- printError("[ADM] Player should be a string")
         return false
     end
 end
 
-local bUpdateScreen = true
-if m and pd then
-    -- os.pullEvent = os.pullEventRaw
+
+
+if modem and pd then
 
     function giftStarterLoot(player)
+        decrementEnergySetting(1000)
         if not addToSettingGiftedPlayers(player) then
-            term.setTextColor(color.magenta)
+            term.setTextColor(colors.magenta)
             print(player..", you already got your Survival Kit")
             sleep(5)
+            return
         end
 
         local payload = {
-            nickname = username,
+            nickname = player,
             secret = payloadSecret
         }
         rednet.send(0, payload, payloadProtocol)
 
-        term.setTextColor(color.magenta)
+        term.setTextColor(colors.magenta)
         print(player.." granted Survival Kit")
         sleep(5)
     end
@@ -100,6 +101,7 @@ if m and pd then
         term_add.clearTerm()
         term.setTextColor(colors.red)
         term_add.writeCenter("====== EMERGENCY SITUATION ======")
+        print()
         print("Drop Pod suffered a hard landing!")
         term.setTextColor(colors.white)
         write("Planet of destination: ")
@@ -110,6 +112,14 @@ if m and pd then
         term.setTextColor(colors.red)
         print("Severe")
         term.setTextColor(colors.white)
+        write("Surviving crew: ")
+        term.setTextColor(colors.red)
+        print("Unknown")
+        term.setTextColor(colors.white)
+        write("Days since landing: ")
+        term.setTextColor(colors.yellow)
+        print("4")
+        term.setTextColor(colors.white)
         write("Energy left: ")
         term.setTextColor(colors.yellow)
         print(getEnergySetting())
@@ -119,14 +129,19 @@ if m and pd then
         print("Intact")
         term.setTextColor(colors.white)
         print("You may request one Survival Kit")
-        print("Click below the Terminal")
+        print("Click Detector below the Terminal")
     end
-
+    defineEnergySetting()
     while true do
+        if getEnergySetting() < 1 then
+            local payload = {
+                shutdown = true,
+                secret = payloadSecret
+            }
+            rednet.send(0, payload, payloadProtocol)
+            os.shutdown()
+        end
         writeTerminal()
-        -- if bUpdateScreen then
-        --     bUpdateScreen = false
-        -- end
         parallel.waitForAny(function()
             local evt, username, _
             repeat
@@ -136,7 +151,7 @@ if m and pd then
         end,
         function()
             sleep(1)
-            setEnergySetting(getEnergySetting()-1)
+            decrementEnergySetting(1)
         end)
     end
 else
